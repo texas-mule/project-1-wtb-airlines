@@ -1,0 +1,11 @@
+{
+    "inputMessageMetadata": {},
+    "outputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "Web_Service_Consumer",
+            "typeId": "getAircraftByManufacturerAndModel"
+        }
+    },
+    "id": "6387f463-991c-4131-a23c-df87b8ee2c61",
+    "version": "5.2.0.0"
+}
