@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:json="http://www.mulesoft.org/schema/mule/json"
-	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
 	xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
 	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
@@ -21,98 +21,21 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 		wsdlLocation="http://localhost:8080/aircraft?wsdl" service="AircraftServiceService"
 		port="AircraftServicePort" serviceAddress="http://localhost:8080/aircraft"
 		doc:name="Web Service Consumer" />
-    <flow name="project1muleFlowGetAllManufacturers">
-		<http:listener config-ref="HTTP_Listener_Configuration"
-			path="/manufacturers" allowedMethods="GET" doc:name="HTTP" />
-		<logger level="INFO" doc:name="Logger" />
+    <http:request-config name="HTTP_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" doc:name="HTTP Request Configuration"/>
+    <flow name="searchFlightSchoolPilotNames">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/pilot/{name}" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="pilotname" value="#[message.inboundProperties.'http.uri.params'.name]" doc:name="pilotname"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/pilot?search={pilotname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="pilotname" value="#[flowVars.pilotname]"/>
+            </http:request-builder>
+        </http:request>
         <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
+            <mulexml:object-to-xml-transformer doc:name="Object to XML"/>
         </response>
         <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getAircraftManufacturers" doc:name="Web Service Consumer"/>
-        </response>
-	</flow>
-    <flow name="project1muleFlowGetManufacturer">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/{manufacturer}" allowedMethods="GET" doc:name="HTTP"/>
-        <set-variable variableName="manufacturer" value="#[message.inboundProperties.'http.uri.params'.manufacturer]" doc:name="Manufacturer"/>
-        <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
-        </response>
-        <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getManufacturer" doc:name="Web Service Consumer"/>
-        </response>
-        <dw:transform-message doc:name="Transform Message" metadata:id="76e9cac0-0798-4df6-8578-4bb2b32d5860">
-            <dw:set-payload><![CDATA[%dw 1.0
-%output application/xml
-%namespace ns0 http://soap.revature.com/
----
-{
-	ns0#getManufacturer: {
-		manufacturer: flowVars.manufacturer as :string
-	}
-}]]></dw:set-payload>
-        </dw:transform-message>
-        <response>
-            <logger level="INFO" doc:name="Logger"/>
+            <json:json-to-object-transformer returnClass="project1mule.PilotList" doc:name="JSON to Object"/>
         </response>
     </flow>
-    <flow name="project1muleFlowGetAircraft">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/{manufacturer}/{model}" allowedMethods="GET" doc:name="HTTP"/>
-        <set-variable variableName="manufacturer" value="#[message.inboundProperties.'http.uri.params'.manufacturer]" doc:name="Manufacturer"/>
-        <set-variable variableName="model" value="#[message.inboundProperties.'http.uri.params'.model]" doc:name="Model"/>
-        <dw:transform-message doc:name="Transform Message" metadata:id="6387f463-991c-4131-a23c-df87b8ee2c61">
-            <dw:set-payload><![CDATA[%dw 1.0
-%output application/xml
-%namespace ns0 http://soap.revature.com/
----
-{
-	ns0#getAircraftByManufacturerAndModel: {
-		manufacturer: flowVars.manufacturer as :string,
-		model: flowVars.model as :string
-	}
-}]]></dw:set-payload>
-        </dw:transform-message>
-        <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
-        </response>
-        <logger level="INFO" doc:name="Logger"/>
-        <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getAircraftByManufacturerAndModel" doc:name="Web Service Consumer"/>
-        </response>
-    </flow>
-    <flow name="project1muleFlowGetAircraftByManufacturer">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/{manufacturer}/all" doc:name="HTTP"/>
-        <set-variable variableName="manufacturer" value="#[message.inboundProperties.'http.uri.params'.manufacturer]" doc:name="Manufacturer"/>
-        <dw:transform-message doc:name="Transform Message" metadata:id="44db754f-66b3-4acf-b007-f10b11e3853d">
-            <dw:set-payload><![CDATA[%dw 1.0
-%output application/xml
-%namespace ns0 http://soap.revature.com/
----
-{
-	ns0#getAircraftByManufacturer: {
-		manufacturer: flowVars.manufacturer as :string
-	}
-}]]></dw:set-payload>
-        </dw:transform-message>
-        <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
-        </response>
-        <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getAircraftByManufacturer" doc:name="Web Service Consumer"/>
-        </response>
-        <response>
-            <logger level="INFO" doc:name="Logger"/>
-        </response>
-    </flow>
-	<flow name="project1muleFlowGetAllAircraft">
-		<http:listener config-ref="HTTP_Listener_Configuration"
-			path="/all" allowedMethods="GET" doc:name="HTTP" />
-		<logger level="INFO" doc:name="Logger" />
-        <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
-        </response>
-        <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft" doc:name="Web Service Consumer"/>
-        </response>
-	</flow>
+
 </mule>
