@@ -1,0 +1,28 @@
+{
+ "title": "Flight School API Root",
+ "description": "Links to the resources available on this API",
+ "$schema": "http://json-schema.org/draft-04/schema",
+ "type": "object",
+ "required": [
+  "pilots",
+  "aircraft",
+  "certifications"
+ ],
+ "properties": {
+  "pilots": {
+   "format": "uri",
+   "description": "The link to the pilots resource",
+   "type": "string"
+  },
+  "aircraft": {
+   "format": "uri",
+   "description": "The link to the aircraft resource",
+   "type": "string"
+  },
+  "certifications": {
+   "format": "uri",
+   "description": "The link to the certifications resource",
+   "type": "string"
+  }
+ }
+}

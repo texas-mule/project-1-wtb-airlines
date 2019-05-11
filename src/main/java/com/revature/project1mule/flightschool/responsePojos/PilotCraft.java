@@ -1,5 +1,5 @@
 
-package project1mule;
+package com.revature.project1mule.flightschool.responsePojos;
 
 import java.util.HashMap;
 import java.util.Map;

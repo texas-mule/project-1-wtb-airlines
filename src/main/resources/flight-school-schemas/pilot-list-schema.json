@@ -1,0 +1,77 @@
+{
+ "title": "Pilot List",
+ "$schema": "http://json-schema.org/draft-04/schema",
+ "description": "The list of pilots who have graduated from Flight School (TM)",
+ "type": "object",
+ "required": [
+  "count",
+  "next",
+  "previous",
+  "results"
+ ],
+ "properties": {
+  "count": {
+   "description": "The number of pilots in the result set.",
+   "type": "integer"
+  },
+  "next": {
+   "format": "uri",
+   "description": "The link to the next page in the list of pilots.",
+   "type": ["string", "null"]
+  },
+  "previous": {
+   "format": "uri",
+   "description": "The link to the previous page in the list of pilots.",
+   "type": ["string", "null"]
+  },
+  "results": {
+   "description": "The results of the lookup.",
+   "type": "array",
+   "items": {
+    "description": "A pilot who has earned a certification from Flight School.",
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "dob",
+     "sex",
+     "url",
+     "age",
+     "aircraft_count"
+    ],
+    "properties": {
+     "id": {
+      "description": "The unique integer identifier for the pilot.",
+      "type": "integer"
+     },
+     "name": {
+      "description": "The pilot's name.",
+      "type": "string"
+     },
+     "dob": {
+      "format": "date",
+      "description": "The pilot's date of birth in YYYY-MM-DD format.",
+      "type": "string"
+     },
+     "sex": {
+      "description": "The pilot's sex.",
+      "type": "string"
+     },
+     "url": {
+      "format": "uri",
+      "description": "The hypermedia URL for the pilot.",
+      "type": "string"
+     },
+     "age": {
+      "description": "The pilot's age in years.",
+      "type": "integer"
+     },
+     "aircraft_count": {
+      "description": "The number of aircraft this pilot is certified to fly.",
+      "type": "integer"
+     }
+    }
+   }
+  }
+ }
+}

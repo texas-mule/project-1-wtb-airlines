@@ -22,6 +22,33 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 		port="AircraftServicePort" serviceAddress="http://localhost:8080/aircraft"
 		doc:name="Web Service Consumer" />
     <http:request-config name="HTTP_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" doc:name="HTTP Request Configuration"/>
+    <flow name="getFlightSchoolPilotDetails">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/pilot/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="pilotname" value="#[message.inboundProperties.'http.uri.params'.name]" doc:name="pilotname"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/pilot?search={pilotname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="pilotname" value="#[flowVars.pilotname]"/>
+            </http:request-builder>
+        </http:request>
+        <dw:transform-message doc:name="Transform Message" metadata:id="b6865f03-65fc-4478-89aa-b960f1c16d6f">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	pilotid: payload.results[0].id
+}]]></dw:set-payload>
+            <dw:set-variable variableName="pilotid"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.results[0].id]]></dw:set-variable>
+        </dw:transform-message>
+        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/pilot/{pilotid}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="pilotid" value="#[flowVars.pilotid]"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
     <flow name="searchFlightSchoolPilotNames">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/pilot/{name}" allowedMethods="GET" doc:name="HTTP"/>
         <set-variable variableName="pilotname" value="#[message.inboundProperties.'http.uri.params'.name]" doc:name="pilotname"/>
@@ -34,7 +61,7 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
             <mulexml:object-to-xml-transformer doc:name="Object to XML"/>
         </response>
         <response>
-            <json:json-to-object-transformer returnClass="project1mule.PilotList" doc:name="JSON to Object"/>
+            <json:json-to-object-transformer returnClass="com.revature.project1mule.flightschool.responsePojos.PilotList" doc:name="JSON to Object"/>
         </response>
     </flow>
 
