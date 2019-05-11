@@ -1,0 +1,1313 @@
+#%RAML 1.0
+---
+title: Flight School API
+baseUri: https://flightschool.joshquizzes.com/flightschool/api
+ /:
+  get:
+   description: Get basic info about the api
+   responses:
+    200:
+     body:
+      application/json:
+       type: |
+        {
+         "title": "Flight School API Root",
+         "description": "Links to the resources available on this API",
+         "$schema": "http://json-schema.org/draft-04/schema",
+         "type": "object",
+         "required": [
+          "pilots",
+          "aircraft",
+          "certifications"
+         ],
+         "properties": {
+          "pilots": {
+           "format": "uri",
+           "description": "The link to the pilots resource",
+           "type": "string"
+          },
+          "aircraft": {
+           "format": "uri",
+           "description": "The link to the aircraft resource",
+           "type": "string"
+          },
+          "certifications": {
+           "format": "uri",
+           "description": "The link to the certifications resource",
+           "type": "string"
+          }
+         }
+        }
+       example: |
+        {
+         "pilots": "https://flightschool.joshquizzes.com/flightschool/api/pilot",
+         "aircraft": "https://flightschool.joshquizzes.com/flightschool/api/aircraft",
+         "certifications": "https://flightschool.joshquizzes.com/flightschool/api/certification"
+        }
+ /pilot:
+  get:
+   description: Get the list of pilots
+   responses:
+    200:
+     body:
+      application/json:
+       type: |
+        {
+         "title": "Pilot List",
+         "$schema": "http://json-schema.org/draft-04/schema",
+         "description": "The list of pilots who have graduated from Flight School (TM)",
+         "type": "object",
+         "required": [
+          "count",
+          "next",
+          "previous",
+          "results"
+         ],
+         "properties": {
+          "count": {
+           "description": "The number of pilots in the result set.",
+           "type": "integer"
+          },
+          "next": {
+           "format": "uri",
+           "description": "The link to the next page in the list of pilots.",
+           "type": ["string", "null"]
+          },
+          "previous": {
+           "format": "uri",
+           "description": "The link to the previous page in the list of pilots.",
+           "type": ["string", "null"]
+          },
+          "results": {
+           "description": "The results of the lookup.",
+           "type": "array",
+           "items": {
+            "description": "A pilot who has earned a certification from Flight School.",
+            "type": "object",
+            "required": [
+             "id",
+             "name",
+             "dob",
+             "sex",
+             "url",
+             "age",
+             "aircraft_count"
+            ],
+            "properties": {
+             "id": {
+              "description": "The unique integer identifier for the pilot.",
+              "type": "integer"
+             },
+             "name": {
+              "description": "The pilot's name.",
+              "type": "string"
+             },
+             "dob": {
+              "format": "date",
+              "description": "The pilot's date of birth in YYYY-MM-DD format.",
+              "type": "string"
+             },
+             "sex": {
+              "description": "The pilot's sex.",
+              "type": "string"
+             },
+             "url": {
+              "format": "uri",
+              "description": "The hypermedia URL for the pilot.",
+              "type": "string"
+             },
+             "age": {
+              "description": "The pilot's age in years.",
+              "type": "integer"
+             },
+             "aircraft_count": {
+              "description": "The number of aircraft this pilot is certified to fly.",
+              "type": "integer"
+             }
+            }
+           }
+          }
+         }
+        }
+       example: |
+        {
+         "count": 1,
+         "next": "https://flightschool.joshquizzes.com/flightschool/api/pilot?page=2",
+         "previous": null,
+         "results": [
+          {
+           "id": 1,
+           "name": "Natasha \"Maverick\" Mitchell",
+           "dob": "1982-07-03",
+           "sex": "female",
+           "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/1/",
+           "age": 36,
+           "aircraft_count": 1
+          }
+         ]
+        }
+   queryParameters:
+    search:
+     displayName: search
+     type: string
+     description: term to case-insensitive match part of a pilot's name
+     example: maverick
+     required: false
+  /{pilotId}:
+   get:
+    description: Get a specific pilot by ID
+    responses:
+     200:
+      body:
+       application/json:
+        type: |
+         {
+          "title": "Pilot Object",
+          "$schema": "http://json-schema.org/draft-04/schema",
+          "description": "A pilot who has graduated from Flight School.",
+          "type": "object",
+          "required": [
+           "id",
+           "name",
+           "dob",
+           "sex",
+           "url",
+           "age",
+           "aircraft_count"
+          ],
+          "properties": {
+           "id": {
+            "description": "The unique integer identifier for this pilot.",
+            "type": "integer"
+           },
+           "name": {
+            "description": "The name of this pilot.",
+            "type": "string"
+           },
+           "dob": {
+            "format": "date",
+            "description": "The pilot's date of birth in YYYY-MM-DD format.",
+            "type": "string"
+           },
+           "sex": {
+            "description": "The pilot's sex.",
+            "type": "string"
+           },
+           "url": {
+            "description": "The hypermedia URL of this resource.",
+            "type": "string"
+           },
+           "age": {
+            "description": "The pilot's age in years.",
+            "type": "integer"
+           },
+           "aircraft_count": {
+            "description": "The number of aircraft this pilot has been trained and certified to fly.",
+            "type": "integer"
+           },
+           "craft": {
+            "description": "An array of the aircraft this pilot has been trained and certified to fly.",
+            "type": "array",
+            "items": {
+             "type": "object",
+             "required": [
+              "id",
+              "name",
+              "certs",
+              "pilot_count",
+              "url"
+             ],
+             "properties": {
+              "id": {
+               "description": "The unique integer that identifies the aircraft.",
+               "type": "integer"
+              },
+              "name": {
+               "description": "The name of the aircraft.",
+               "type": "string"
+              },
+              "certs": {
+               "description": "A comma-separated list of the certifications that allow a pilot to fly this aircraft.",
+               "type": "string"
+              },
+              "pilot_count": {
+               "description": "The number of pilots from Flight School who are certified to fly this aircraft.",
+               "type": "integer"
+              },
+              "url": {
+               "description": "The hypermedia URL for the aircraft.",
+               "type": "string"
+              }
+             }
+            }
+           }
+          }
+         }
+        example: |
+         {
+          "id": 1,
+          "name": "Natasha \"Maverick\" Mitchell",
+          "dob": "1982-07-03",
+          "sex": "female",
+          "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/1/",
+          "age": 36,
+          "aircraft_count": 1,
+          "craft": [
+           {
+            "id": 39,
+            "name": "Piper PA-34 Seneca",
+            "certs": "personal, twin-engine, light",
+            "pilot_count": 17,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/39/"
+           }
+          ]
+         }
+  /schema
+   get:
+    description: Get the schema for pilots
+    responses:
+     200:
+      body:
+       application/json:
+        example: |
+         {
+          "title": "Pilot Object",
+          "$schema": "http://json-schema.org/draft-04/schema",
+          "description": "A pilot who has graduated from Flight School.",
+          "type": "object",
+          "required": [
+           "id",
+           "name",
+           "dob",
+           "sex",
+           "url",
+           "age",
+           "aircraft_count"
+          ],
+          "properties": {
+           "id": {
+            "description": "The unique integer identifier for this pilot.",
+            "type": "integer"
+           },
+           "name": {
+            "description": "The name of this pilot.",
+            "type": "string"
+           },
+           "dob": {
+            "format": "date",
+            "description": "The pilot's date of birth in YYYY-MM-DD format.",
+            "type": "string"
+           },
+           "sex": {
+            "description": "The pilot's sex.",
+            "type": "string"
+           },
+           "url": {
+            "description": "The hypermedia URL of this resource.",
+            "type": "string"
+           },
+           "age": {
+            "description": "The pilot's age in years.",
+            "type": "integer"
+           },
+           "aircraft_count": {
+            "description": "The number of aircraft this pilot has been trained and certified to fly.",
+            "type": "integer"
+           },
+           "craft": {
+            "description": "An array of the aircraft this pilot has been trained and certified to fly.",
+            "type": "array",
+            "items": {
+             "type": "object",
+             "required": [
+              "id",
+              "name",
+              "certs",
+              "pilot_count",
+              "url"
+             ],
+             "properties": {
+              "id": {
+               "description": "The unique integer that identifies the aircraft.",
+               "type": "integer"
+              },
+              "name": {
+               "description": "The name of the aircraft.",
+               "type": "string"
+              },
+              "certs": {
+               "description": "A comma-separated list of the certifications that allow a pilot to fly this aircraft.",
+               "type": "string"
+              },
+              "pilot_count": {
+               "description": "The number of pilots from Flight School who are certified to fly this aircraft.",
+               "type": "integer"
+              },
+              "url": {
+               "description": "The hypermedia URL for the aircraft.",
+               "type": "string"
+              }
+             }
+            }
+           }
+          }
+         }
+ /certification:
+  get:
+   description: Get the list of certifications
+   responses:
+    200:
+     body:
+      application/json:
+       type: |
+        {
+         "title": "Certification List", 
+         "$schema": "http://json-schema.org/draft-04/schema",
+         "description": "The valuable, legitimate certifications of Flight School",
+         "type": "object",
+         "required": [
+          "count",
+          "next",
+          "previous",
+          "results"
+         ],
+         "properties": {
+          "count": {
+           "description": "The number of records in the result set.",
+           "type": "integer"
+          },
+          "next": {
+           "format": "uri",
+           "description": "The link to the next page of certifications.",
+           "type": ["string", "null"]
+          },
+          "previous": {
+           "format": "uri",
+           "description": "The link to the previous page of certifications.",
+           "type": ["string", "null"]
+          },
+          "results": {
+           "description": "The certifications in the result set.",
+           "type": "array",
+           "title": "The Results Schema",
+           "items": {
+            "description": "A certification that Flight School students can earn.",
+            "type": "object",
+            "required": [
+             "id",
+             "name",
+             "craft_count",
+             "pilot_count",
+             "url"
+            ],
+            "properties": {
+             "id": {
+              "description": "The unique integer identifier for the certification.",
+              "type": "integer"
+             },
+             "name": {
+              "description": "The name of the certification.",
+              "type": "string"
+             },
+             "craft_count": {
+              "description": "The number of aircraft a pilot with this certification will be able to fly.",
+              "type": "integer"
+             },
+             "pilot_count": {
+              "description": "The number of Flight School pilots who have earned this legitimate certification.",
+              "type": "integer"
+             },
+             "url": {
+              "format": "uri",
+              "description": "The hypermedia URL for the certification.",
+              "type": "string"
+             }
+            }
+           }
+          }
+         }
+        }
+       example: |
+        {
+         "count": 1,
+         "next": "https://flightschool.joshquizzes.com/flightschool/api/certification?page=2",
+         "previous": null,
+         "results": [
+          {
+           "id": 3,
+           "name": "twin-engine",
+           "craft_count": 14,
+           "pilot_count": 7,
+           "url": "https://flightschool.joshquizzes.com/flightschool/api/certification/3/"
+          }
+         ]
+        }
+   queryParameters:
+    search:
+     displayName: search
+     type: string
+     description: case-insensitive matches part of a certification name
+     example: engine
+     required: false
+  /{certificationId}:
+   get:
+    description: Get a specific certification by ID
+    responses:
+     200:
+      body:
+       application/json:
+        type: |
+         {
+          "title": "Certification Object",
+          "$schema": "http://json-schema.org/draft-04/schema",
+          "description": "A certification that we offer here at Flight School.",
+          "type": "object",
+          "required": [
+           "id",
+           "name",
+           "craft_count",
+           "pilot_count",
+           "url"
+          ],
+          "properties": {
+           "id": {
+            "description": "The unique integer identifier for this certification.",
+            "type": "integer"
+           },
+           "name": {
+            "description": "The name of this certification.",
+            "type": "string"
+           },
+           "craft_count": {
+            "description": "The number of aircraft that a pilot who earns this certification will be certified to fly.",
+            "type": "integer"
+           },
+           "pilot_count": {
+            "description": "The number of pilots who have earned this certification here at Flight School.",
+            "type": "integer"
+           },
+           "url": {
+            "format": "uri",
+            "description": "The hypermedia URL of this resource.",
+            "type": "string"
+           },
+           "pilots": {
+            "description": "An array of the pilots who have earned this certification here at Flight School.",
+            "type": "array",
+            "items": {
+             "type": "object",
+             "required": [
+              "id",
+              "name",
+              "dob",
+              "sex",
+              "url",
+              "age",
+              "aircraft_count"
+             ],
+             "properties": {
+              "id": {
+               "description": "The unique integer identifier for this pilot.",
+               "type": "integer"
+              },
+              "name": {
+               "description": "The pilot's name.",
+               "type": "string"
+              },
+              "dob": {
+               "format": "date",
+               "description": "The pilot's date of birth in YYYY-MM-DD format.",
+               "type": "string"
+              },
+              "sex": {
+               "description": "The pilot's sex.",
+               "type": "string"
+              },
+              "url": {
+               "format": "uri",
+               "description": "The hypermedia URL for the pilot.",
+               "type": "string"
+              },
+              "age": {
+               "description": "The pilot's age in years.",
+               "type": "integer"
+              },
+              "aircraft_count": {
+               "description": "The number of aircraft this pilot has been trained and certified to fly.",
+               "type": "integer"
+              }
+             }
+            }
+           },
+           "craft": {
+            "description": "An array of the aircraft that a pilot who earns this certification will be certified to fly.",
+            "type": "array",
+            "items": {
+             "type": "object",
+             "required": [
+              "id",
+              "name",
+              "certs",
+              "pilot_count",
+              "url"
+             ],
+             "properties": {
+              "id": {
+               "description": "The unique integer identifier for the aircraft.",
+               "type": "integer"
+              },
+              "name": {
+               "description": "The name of the aircraft.",
+               "type": "string"
+              },
+              "certs": {
+               "description": "A comma-separated list of the certifications that allow a pilot to fly this aircraft.",
+               "type": "string"
+              },
+              "pilot_count": {
+               "description": "The number of pilots at Flight School who are certified to fly this aircraft.",
+               "type": "integer"
+              },
+              "url": {
+               "description": "The hypermedia URL for the aircraft.",
+               "type": "string"
+              }
+             }
+            }
+           }
+          }
+         }
+        example: |
+         {
+          "id": 3,
+          "name": "twin-engine",
+          "craft_count": 14,
+          "pilot_count": 7,
+          "url": "https://flightschool.joshquizzes.com/flightschool/api/certification/3/",
+          "pilots": [
+           {
+            "id": 4,
+            "name": "Mike \"Viper\" Metcalf",
+            "dob": "1977-08-25",
+            "sex": "male",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/4/",
+            "age": 41,
+            "aircraft_count": 17
+           },
+           {
+            "id": 28,
+            "name": "Mike \"Sparrow\" Vasquez",
+            "dob": "1979-03-28",
+            "sex": "male",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/28/",
+            "age": 40,
+            "aircraft_count": 15
+           },
+           {
+            "id": 31,
+            "name": "Hannah \"Typhoon\" Gadot",
+            "dob": "1995-12-29",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/31/",
+            "age": 23,
+            "aircraft_count": 27
+           },
+           {
+            "id": 5,
+            "name": "Heather \"Jester\" Heatherly",
+            "dob": "1985-02-12",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/5/",
+            "age": 34,
+            "aircraft_count": 17
+           },
+           {
+            "id": 3,
+            "name": "Jessica \"Goose\" Bradshaw",
+            "dob": "1975-07-19",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/3/",
+            "age": 43,
+            "aircraft_count": 15
+           },
+           {
+            "id": 20,
+            "name": "Charles \"Black Mamba\" Mercado",
+            "dob": "1981-09-13",
+            "sex": "male",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/20/",
+            "age": 37,
+            "aircraft_count": 14
+           },
+           {
+            "id": 21,
+            "name": "Sophie \"Anti-matter\" Federov",
+            "dob": "1983-08-14",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/21/",
+            "age": 35,
+            "aircraft_count": 29
+           }
+          ],
+          "craft": [
+           {
+            "id": 44,
+            "name": "Cessna 425",
+            "certs": "twin-engine, turboprop, light",
+            "pilot_count": 18,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/44/"
+           },
+           {
+            "id": 40,
+            "name": "Partenavia P68",
+            "certs": "transport, twin-engine",
+            "pilot_count": 15,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/40/"
+           },
+           {
+            "id": 46,
+            "name": "Piper PA-44 Seminole",
+            "certs": "twin-engine, light",
+            "pilot_count": 14,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/46/"
+           },
+           {
+            "id": 27,
+            "name": "Eurocopter AS355",
+            "certs": "twin-engine, light, utility rotor",
+            "pilot_count": 18,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/27/"
+           },
+           {
+            "id": 42,
+            "name": "Cessna 404 Titan",
+            "certs": "twin-engine",
+            "pilot_count": 7,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/42/"
+           },
+           {
+            "id": 26,
+            "name": "Eurocopter EC135",
+            "certs": "twin-engine, light, utility rotor",
+            "pilot_count": 18,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/26/"
+           },
+           {
+            "id": 1,
+            "name": "Beechcraft 1900",
+            "certs": "airliner, twin-engine, fixed-wing",
+            "pilot_count": 13,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/1/"
+           },
+           {
+            "id": 5,
+            "name": "Boeing 767",
+            "certs": "jet, twin-engine, fixed-wing",
+            "pilot_count": 13,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/5/"
+           },
+           {
+            "id": 39,
+            "name": "Piper PA-34 Seneca",
+            "certs": "personal, twin-engine, light",
+            "pilot_count": 17,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/39/"
+           },
+           {
+            "id": 45,
+            "name": "Cessna T303 Crusader",
+            "certs": "twin-engine",
+            "pilot_count": 7,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/45/"
+           },
+           {
+            "id": 37,
+            "name": "Beechcraft 60 Duke",
+            "certs": "light, fixed-wing, twin-engine",
+            "pilot_count": 17,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/37/"
+           },
+           {
+            "id": 38,
+            "name": "Cessna 414",
+            "certs": "twin-engine, light",
+            "pilot_count": 14,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/38/"
+           },
+           {
+            "id": 36,
+            "name": "Piper PA-31 Navajo",
+            "certs": "twin-engine, cabin-class",
+            "pilot_count": 12,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/36/"
+           },
+           {
+            "id": 35,
+            "name": "Piper Aerostar",
+            "certs": "transport, twin-engine, light",
+            "pilot_count": 20,
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/35/"
+           }
+          ]
+         }
+  /schema
+   get:
+    description: Get the schema for certifications
+    responses:
+     200:
+      body:
+       application/json:
+        example: |
+         {
+          "title": "Certification Object",
+          "$schema": "http://json-schema.org/draft-04/schema",
+          "description": "A certification that we offer here at Flight School.",
+          "type": "object",
+          "required": [
+           "id",
+           "name",
+           "craft_count",
+           "pilot_count",
+           "url"
+          ],
+          "properties": {
+           "id": {
+            "description": "The unique integer identifier for this certification.",
+            "type": "integer"
+           },
+           "name": {
+            "description": "The name of this certification.",
+            "type": "string"
+           },
+           "craft_count": {
+            "description": "The number of aircraft that a pilot who earns this certification will be certified to fly.",
+            "type": "integer"
+           },
+           "pilot_count": {
+            "description": "The number of pilots who have earned this certification here at Flight School.",
+            "type": "integer"
+           },
+           "url": {
+            "format": "uri",
+            "description": "The hypermedia URL of this resource.",
+            "type": "string"
+           },
+           "pilots": {
+            "description": "An array of the pilots who have earned this certification here at Flight School.",
+            "type": "array",
+            "items": {
+             "type": "object",
+             "required": [
+              "id",
+              "name",
+              "dob",
+              "sex",
+              "url",
+              "age",
+              "aircraft_count"
+             ],
+             "properties": {
+              "id": {
+               "description": "The unique integer identifier for this pilot.",
+               "type": "integer"
+              },
+              "name": {
+               "description": "The pilot's name.",
+               "type": "string"
+              },
+              "dob": {
+               "format": "date",
+               "description": "The pilot's date of birth in YYYY-MM-DD format.",
+               "type": "string"
+              },
+              "sex": {
+               "description": "The pilot's sex.",
+               "type": "string"
+              },
+              "url": {
+               "format": "uri",
+               "description": "The hypermedia URL for the pilot.",
+               "type": "string"
+              },
+              "age": {
+               "description": "The pilot's age in years.",
+               "type": "integer"
+              },
+              "aircraft_count": {
+               "description": "The number of aircraft this pilot has been trained and certified to fly.",
+               "type": "integer"
+              }
+             }
+            }
+           },
+           "craft": {
+            "description": "An array of the aircraft that a pilot who earns this certification will be certified to fly.",
+            "type": "array",
+            "items": {
+             "type": "object",
+             "required": [
+              "id",
+              "name",
+              "certs",
+              "pilot_count",
+              "url"
+             ],
+             "properties": {
+              "id": {
+               "description": "The unique integer identifier for the aircraft.",
+               "type": "integer"
+              },
+              "name": {
+               "description": "The name of the aircraft.",
+               "type": "string"
+              },
+              "certs": {
+               "description": "A comma-separated list of the certifications that allow a pilot to fly this aircraft.",
+               "type": "string"
+              },
+              "pilot_count": {
+               "description": "The number of pilots at Flight School who are certified to fly this aircraft.",
+               "type": "integer"
+              },
+              "url": {
+               "description": "The hypermedia URL for the aircraft.",
+               "type": "string"
+              }
+             }
+            }
+           }
+          }
+         }
+ /aircraft:
+  get:
+   description: Get the list of aircraft
+   responses:
+    200:
+     body:
+      application/json:
+       type: |
+        {
+         "title": "Aircraft List",
+         "$schema": "http://json-schema.org/draft-04/schema",
+         "description": "Lists the aircraft Flight School pilots are trained to fly.",
+         "type": "object",
+         "required": [
+          "count",
+          "next",
+          "previous",
+          "results"
+         ],
+         "properties": {
+          "count": {
+           "description": "The number of records in the result set.",
+           "type": "integer"
+          },
+          "next": {
+           "format": "uri",
+           "description": "Link to the next page of results.",
+           "type": ["string", "null"]
+          },
+          "previous": {
+           "format": "uri",
+           "description": "Link to the previous page of results.",
+           "type": ["string", "null"]
+          },
+          "results": {
+           "description": "Aircraft from the result set.",
+           "type": "array",
+           "items": {
+            "description": "An aircraft that Flight School pilots train to fly.",
+            "type": "object",
+            "required": [
+             "id",
+             "name",
+             "certs",
+             "pilot_count",
+             "url"
+            ],
+            "properties": {
+             "id": {
+              "description": "The unique integer that identifies this aircraft.",
+              "type": "integer"
+             },
+             "name": {
+              "description": "The aircraft name.",
+              "type": "string"
+             },
+             "certs": {
+              "description": "A comma-separated list of the certifications that allow a pilot to fly this aircraft.",
+              "type": "string"
+             },
+             "pilot_count": {
+              "description": "The number of Flight School pilots who have been certified to fly this aircraft.",
+              "type": "integer"
+             },
+             "url": {
+              "format": "uri",
+              "description": "The hypermedia URL for the aircraft.",
+              "type": "string"
+             }
+            }
+           }
+          }
+         }
+        }
+       example: |
+        {
+         "count": 6,
+         "next": "https://flightschool.joshquizzes.com/flightschool/api/aircraft?page=2",
+         "previous": null,
+         "results": [
+          {
+           "id": 38,
+           "name": "Cessna 414",
+           "certs": "light, twin-engine",
+           "pilot_count": 14,
+           "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/38/"
+          },
+          {
+           "id": 42,
+           "name": "Cessna 404 Titan",
+           "certs": "twin-engine",
+           "pilot_count": 7,
+           "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/42/"
+          },
+          {
+           "id": 45,
+           "name": "Cessna T303 Crusader",
+           "certs": "twin-engine",
+           "pilot_count": 7,
+           "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/45/"
+          },
+          {
+           "id": 11,
+           "name": "Cessna 208 Caravan",
+           "certs": "light, fixed-wing",
+           "pilot_count": 12,
+           "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/11/"
+          },
+          {
+           "id": 43,
+           "name": "Cessna 441",
+           "certs": "turboprop",
+           "pilot_count": 5,
+           "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/43/"
+          },
+          {
+           "id": 44,
+           "name": "Cessna 425",
+           "certs": "light, turboprop, twin-engine",
+           "pilot_count": 18,
+           "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/44/"
+          }
+         ]
+        }
+   queryParameters:
+    search:
+     displayName: search
+     type: string
+     description: case-insensitive matches part of an aircraft name
+     example: cessna
+     required: false
+  /{aircraftId}:
+   get:
+    description: Get a specific aircraft by ID
+    responses:
+     200:
+      body:
+       application/json:
+        type: |
+         {
+          "title": "Aircraft Object",
+          "$schema": "http://json-schema.org/draft-04/schema",
+          "description": "An aircraft that Flight School pilots are trained and certified to fly.",
+          "type": "object",
+          "required": [
+           "id",
+           "name",
+           "certs",
+           "pilot_count",
+           "url"
+          ],
+          "properties": {
+           "id": {
+            "description": "The unique integer identifier for this aircraft.",
+            "type": "integer"
+           },
+           "name": {
+            "description": "The name of the aircraft.",
+            "type": "string"
+           },
+           "certs": {
+            "description": "A comma-separated list of the certifications that allow a pilot to fly this aircraft.",
+            "type": "string"
+           },
+           "pilot_count": {
+            "description": "The number of pilots at Flight School who are certified to fly this aircraft.",
+            "type": "integer"
+           },
+           "url": {
+            "format": "uri",
+            "description": "The hypermedia URL of this resource.",
+            "type": "string"
+           },
+           "pilots": {
+            "description": "An array of the pilots at Flight School who are certified to fly this aircraft.",
+            "type": "array",
+            "items": {
+             "type": "object",
+             "required": [
+              "id",
+              "name",
+              "dob",
+              "sex",
+              "url",
+              "age",
+              "aircraft_count"
+             ],
+             "properties": {
+              "id": {
+               "description": "The unique integer identifier for this pilot.",
+               "type": "integer"
+              },
+              "name": {
+               "description": "The pilot's name.",
+               "type": "string"
+              },
+              "dob": {
+               "format": "date",
+               "description": "The pilot's date of birth in YYYY-MM-DD format.",
+               "type": "string"
+              },
+              "sex": {
+               "description": "The pilot's sex.",
+               "type": "string"
+              },
+              "url": {
+               "description": "The hypermedia URL for the pilot.",
+               "format": "uri",
+               "type": "string"
+              },
+              "age": {
+               "description": "The pilot's age in years.",
+               "type": "integer"
+              },
+              "aircraft_count": {
+               "description": "The number of aircraft this pilot is certified to fly.",
+               "type": "integer"
+              }
+             }
+            }
+           }
+          }
+         }
+        example: |
+         {
+          "id": 11,
+          "name": "Cessna 208 Caravan",
+          "certs": "light, fixed-wing",
+          "pilot_count": 12,
+          "url": "https://flightschool.joshquizzes.com/flightschool/api/aircraft/11/",
+          "pilots": [
+           {
+            "id": 17,
+            "name": "Charlotte \"Charlie\" Blackwood",
+            "dob": "1978-07-09",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/17/",
+            "age": 40,
+            "aircraft_count": 13
+           },
+           {
+            "id": 25,
+            "name": "Daisy \"Spotty\" Campbell",
+            "dob": "1991-03-19",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/25/",
+            "age": 28,
+            "aircraft_count": 24
+           },
+           {
+            "id": 29,
+            "name": "Gally \"Ear Worm\" Sanchez",
+            "dob": "1993-10-29",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/29/",
+            "age": 25,
+            "aircraft_count": 9
+           },
+           {
+            "id": 16,
+            "name": "Guido \"Scorcher\" Rossum",
+            "dob": "1997-06-15",
+            "sex": "male",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/16/",
+            "age": 21,
+            "aircraft_count": 10
+           },
+           {
+            "id": 31,
+            "name": "Hannah \"Typhoon\" Gadot",
+            "dob": "1995-12-29",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/31/",
+            "age": 23,
+            "aircraft_count": 27
+           },
+           {
+            "id": 26,
+            "name": "Henry \"Messy\" Cortez",
+            "dob": "1992-02-20",
+            "sex": "male",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/26/",
+            "age": 27,
+            "aircraft_count": 12
+           },
+           {
+            "id": 3,
+            "name": "Jessica \"Goose\" Bradshaw",
+            "dob": "1975-07-19",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/3/",
+            "age": 43,
+            "aircraft_count": 15
+           },
+           {
+            "id": 27,
+            "name": "Maria \"Psycho\" Dillon",
+            "dob": "1980-01-01",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/27/",
+            "age": 39,
+            "aircraft_count": 28
+           },
+           {
+            "id": 32,
+            "name": "Pete \"Tyrant\" Washington",
+            "dob": "1996-02-28",
+            "sex": "male",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/32/",
+            "age": 23,
+            "aircraft_count": 26
+           },
+           {
+            "id": 22,
+            "name": "Rick \"Cougar\" Turner",
+            "dob": "1985-07-15",
+            "sex": "male",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/22/",
+            "age": 33,
+            "aircraft_count": 9
+           },
+           {
+            "id": 7,
+            "name": "Sandra \"Wolfsbane\" Ruth",
+            "dob": "1990-02-13",
+            "sex": "female",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/7/",
+            "age": 29,
+            "aircraft_count": 20
+           },
+           {
+            "id": 12,
+            "name": "Tom \"Stinger\" Jordan",
+            "dob": "1973-06-20",
+            "sex": "male",
+            "url": "https://flightschool.joshquizzes.com/flightschool/api/pilot/12/",
+            "age": 45,
+            "aircraft_count": 9
+           }
+          ]
+         }
+  /schema
+   get:
+    description Get the schema for aircraft
+    responses:
+     200:
+      body:
+       application/json:
+        example: |
+         {
+          "title": "Aircraft Object",
+          "$schema": "http://json-schema.org/draft-04/schema",
+          "description": "An aircraft that Flight School pilots are trained and certified to fly.",
+          "type": "object",
+          "required": [
+           "id",
+           "name",
+           "certs",
+           "pilot_count",
+           "url"
+          ],
+          "properties": {
+           "id": {
+            "description": "The unique integer identifier for this aircraft.",
+            "type": "integer"
+           },
+           "name": {
+            "description": "The name of the aircraft.",
+            "type": "string"
+           },
+           "certs": {
+            "description": "A comma-separated list of the certifications that allow a pilot to fly this aircraft.",
+            "type": "string"
+           },
+           "pilot_count": {
+            "description": "The number of pilots at Flight School who are certified to fly this aircraft.",
+            "type": "integer"
+           },
+           "url": {
+            "format": "uri",
+            "description": "The hypermedia URL of this resource.",
+            "type": "string"
+           },
+           "pilots": {
+            "description": "An array of the pilots at Flight School who are certified to fly this aircraft.",
+            "type": "array",
+            "items": {
+             "type": "object",
+             "required": [
+              "id",
+              "name",
+              "dob",
+              "sex",
+              "url",
+              "age",
+              "aircraft_count"
+             ],
+             "properties": {
+              "id": {
+               "description": "The unique integer identifier for this pilot.",
+               "type": "integer"
+              },
+              "name": {
+               "description": "The pilot's name.",
+               "type": "string"
+              },
+              "dob": {
+               "format": "date",
+               "description": "The pilot's date of birth in YYYY-MM-DD format.",
+               "type": "string"
+              },
+              "sex": {
+               "description": "The pilot's sex.",
+               "type": "string"
+              },
+              "url": {
+               "description": "The hypermedia URL for the pilot.",
+               "format": "uri",
+               "type": "string"
+              },
+              "age": {
+               "description": "The pilot's age in years.",
+               "type": "integer"
+              },
+              "aircraft_count": {
+               "description": "The number of aircraft this pilot is certified to fly.",
+               "type": "integer"
+              }
+             }
+            }
+           }
+          }
+         }
