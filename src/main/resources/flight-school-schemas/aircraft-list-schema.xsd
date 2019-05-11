@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ elementFormDefault="qualified" attributeFormDefault="unqualified">
+ <xs:element name="AircraftList">
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element name="count" type="xs:int"></xs:element>
+    <xs:element name="next" type="xs:string"></xs:element>
+    <xs:element name="previous" type="xs:string"></xs:element>
+    <xs:element name="results">
+     <xs:complexType>
+      <xs:sequence>
+       <xs:element name="result" maxOccurs="10" minOccurs="0">
+        <xs:complexType>
+         <xs:sequence>
+          <xs:element name="id" type="xs:int"></xs:element>
+          <xs:element name="name" type="xs:string"></xs:element>
+          <xs:element name="certs" type="xs:string"></xs:element>
+          <xs:element name="pilot_count" type="xs:int"></xs:element>
+          <xs:element name="url" type="xs:string"></xs:element>
+         </xs:sequence>
+        </xs:complexType>
+       </xs:element>	
+      </xs:sequence>
+     </xs:complexType>
+    </xs:element>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+</xs:schema>

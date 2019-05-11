@@ -22,6 +22,43 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 		port="AircraftServicePort" serviceAddress="http://localhost:8080/aircraft"
 		doc:name="Web Service Consumer" />
     <http:request-config name="HTTP_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" doc:name="HTTP Request Configuration"/>
+    <flow name="searchFlightSchoolAircraft">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/aircraft/{name}" allowedMethods="GET" doc:name="HTTP"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/aircraft?search={aircraftname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="aircraftname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
+            </http:request-builder>
+        </http:request>
+        <dw:transform-message doc:name="Transform Message" metadata:id="d8140297-70fd-4bcd-a5b8-24a92abcf664">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	AircraftList: {
+		count: payload.count,
+		next: payload.next as :string default "null",
+		previous: payload.previous as :string default "null",
+		results: {
+			(payload.results map ((result , indexOfResult) -> {
+				result: {
+					id: result.id,
+					name: result.name,
+					certs: result.certs,
+					pilot_count: result.pilot_count,
+					url: result.url
+				}
+			}))
+		}
+	}
+}]]></dw:set-payload>
+            <dw:set-variable variableName="resxml"><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </flow>
     <flow name="getFlightSchoolPilotDetails">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/pilot/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
         <set-variable variableName="pilotname" value="#[message.inboundProperties.'http.uri.params'.name]" doc:name="pilotname"/>

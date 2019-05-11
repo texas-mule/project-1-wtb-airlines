@@ -1,0 +1,16 @@
+<AircraftList>
+	<count>46</count>
+	<next>https://flightschool.joshquizzes.com/flightschool/api/aircraft?page=2
+	</next>
+	<previous>null</previous>
+	<results>
+		<result>
+			<id>3</id>
+			<name>Boeing 747-400</name>
+			<certs>airliner, jet</certs>
+			<pilot_count>7</pilot_count>
+			<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/3/
+			</url>
+		</result>
+	</results>
+</AircraftList>
