@@ -17,7 +17,7 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 	<http:listener-config name="HTTP_Listener_Configuration"
 		host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"
-		basePath="aircraft" />
+		basePath="flightschool" />
 	<ws:consumer-config name="Web_Service_Consumer"
 		wsdlLocation="http://localhost:8080/aircraft?wsdl" service="AircraftServiceService"
 		port="AircraftServicePort" serviceAddress="http://localhost:8080/aircraft"
@@ -25,8 +25,43 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
     <http:request-config name="HTTP_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" doc:name="HTTP Request Configuration"/>
     <http:request-config name="HTTP_Request_no_host" protocol="HTTPS" host="#[flowVars.aircraftUrls[flowVars.counter]]" doc:name="HTTP Request Configuration"/>
     <http:request-config name="HTTP_Request_From_Aircraft_URL" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" basePath="#[flowVars.path]" doc:name="HTTP Request Configuration"/>
+    <http:listener-config name="FlightSchool_Listener_Configuration" host="0.0.0.0" port="8082" basePath="flightschool" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="FlightSchool_Basic_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="FlightSchool_AircraftURL_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" basePath="#[flowVars.path]" doc:name="HTTP Request Configuration"/>
+    <flow name="searchFlightSchoolCertifications">
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/certification/{name}" allowedMethods="GET" doc:name="HTTP"/>
+        <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/flightschool/api/certification?search={certificationname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="certificationname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
+            </http:request-builder>
+        </http:request>
+        <dw:transform-message doc:name="Transform Message" metadata:id="ada7a9df-e284-4395-afd3-f9e82c277030">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	CertificationList: {
+		count: payload.count,
+		next: payload.next as :string default "null",
+		previous: payload.previous as :string default "null",
+		results: {
+			(payload.results map ((result , indexOfResult) -> {
+				result: {
+					id: result.id,
+					name: result.name,
+					craft_count: result.craft_count,
+					pilot_count: result.pilot_count,
+					url: result.url
+				}
+			}))
+		}
+	}
+}]]></dw:set-payload>
+        </dw:transform-message>
+    </flow>
     <flow name="getFlightSchoolAircraftDetails">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/aircraft/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/aircraft/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
         <set-variable variableName="aircraftdetailslist" value="{&quot;aircraftlist&quot;:[]}" doc:name="aircraftdetailslist" metadata:id="3eddd3c6-bb2d-4e55-a5cb-b5a7da0b8428" mimeType="application/json"/>
         <response>
             <dw:transform-message doc:name="Transform Message" metadata:id="2219a13c-a0b1-495b-aff7-3e9f36f21e2a">
@@ -65,7 +100,7 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
         <response>
             <set-payload value="#[flowVars.aircraftdetailslist]" doc:name="Set Payload"/>
         </response>
-        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/aircraft?search={aircraftname}" method="GET" doc:name="HTTP">
+        <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/flightschool/api/aircraft?search={aircraftname}" method="GET" doc:name="HTTP">
             <http:request-builder>
                 <http:uri-param paramName="aircraftname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
             </http:request-builder>
@@ -120,7 +155,7 @@ payload.results.url
 ---
 (flowVars.url as :string match /^.*com(.*)$/)[1]]]></dw:set-variable>
             </dw:transform-message>
-            <http:request config-ref="HTTP_Request_From_Aircraft_URL" path="/" method="GET" doc:name="HTTP"/>
+            <http:request config-ref="FlightSchool_AircraftURL_Request_Configuration" path="/" method="GET" doc:name="HTTP"/>
             <dw:transform-message doc:name="Transform Message" metadata:id="16f2f0f9-1350-456f-b2cd-afb8268098e1">
                 <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
@@ -135,7 +170,7 @@ flowVars.acc + payload]]></dw:set-variable>
         </foreach>
     </flow>
     <flow name="searchFlightSchoolAircraft">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/aircraft/{name}" allowedMethods="GET" doc:name="HTTP"/>
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/aircraft/{name}" allowedMethods="GET" doc:name="HTTP"/>
         <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/aircraft?search={aircraftname}" method="GET" doc:name="HTTP">
             <http:request-builder>
                 <http:uri-param paramName="aircraftname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
@@ -172,7 +207,7 @@ flowVars.acc + payload]]></dw:set-variable>
         </dw:transform-message>
     </flow>
     <flow name="getFlightSchoolPilotDetails">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/pilot/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/pilot/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
         <set-variable variableName="pilotname" value="#[message.inboundProperties.'http.uri.params'.name]" doc:name="pilotname"/>
         <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/pilot?search={pilotname}" method="GET" doc:name="HTTP">
             <http:request-builder>
@@ -214,7 +249,7 @@ payload.results[0].id]]></dw:set-variable>
         </http:request>
     </flow>
     <flow name="searchFlightSchoolPilotNames">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/pilot/{name}" allowedMethods="GET" doc:name="HTTP"/>
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/pilot/{name}" allowedMethods="GET" doc:name="HTTP"/>
         <set-variable variableName="pilotname" value="#[message.inboundProperties.'http.uri.params'.name]" doc:name="pilotname"/>
         <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/pilot?search={pilotname}" method="GET" doc:name="HTTP">
             <http:request-builder>
