@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+          <!-- XML Schema Generated from XML Document on Sun May 12 2019 13:50:47 GMT-0500 (Central Daylight Time) -->
+          <!-- with XmlGrid.net Free Online Service http://xmlgrid.net -->
+       <xs:element name="CertificationDetails">
+              <xs:complexType>
+                     <xs:sequence>
+                            <xs:element name="Certification" maxOccurs="unbounded">
+                                   <xs:complexType>
+                                          <xs:sequence>
+                                                 <xs:element name="id" type="xs:int"></xs:element>
+                                                 <xs:element name="name" type="xs:string"></xs:element>
+                                                 <xs:element name="craft_count" type="xs:int"></xs:element>
+                                                 <xs:element name="pilot_count" type="xs:int"></xs:element>
+                                                 <xs:element name="url" type="xs:string"></xs:element>
+                                                 <xs:element name="pilots">
+                                                        <xs:complexType>
+                                                               <xs:sequence>
+                                                                      <xs:element name="pilot" maxOccurs="unbounded">
+                                                                             <xs:complexType>
+                                                                                    <xs:sequence>
+                                                                                           <xs:element name="id" type="xs:int"></xs:element>
+                                                                                           <xs:element name="name" type="xs:string"></xs:element>
+                                                                                           <xs:element name="dob" type="xs:date"></xs:element>
+                                                                                           <xs:element name="sex" type="xs:string"></xs:element>
+                                                                                           <xs:element name="url" type="xs:string"></xs:element>
+                                                                                           <xs:element name="age" type="xs:int"></xs:element>
+                                                                                           <xs:element name="aircraft_count" type="xs:int"></xs:element>
+                                                                                       </xs:sequence>
+                                                                                </xs:complexType>
+                                                                         </xs:element>
+                                                                  </xs:sequence>
+                                                           </xs:complexType>
+                                                    </xs:element>
+                                                 <xs:element name="craftlist">
+                                                        <xs:complexType>
+                                                               <xs:sequence>
+                                                                      <xs:element name="craft" maxOccurs="unbounded">
+                                                                             <xs:complexType>
+                                                                                    <xs:sequence>
+                                                                                           <xs:element name="id" type="xs:int"></xs:element>
+                                                                                           <xs:element name="name" type="xs:string"></xs:element>
+                                                                                           <xs:element name="certs" type="xs:string"></xs:element>
+                                                                                           <xs:element name="pilot_count" type="xs:int"></xs:element>
+                                                                                           <xs:element name="url" type="xs:string"></xs:element>
+                                                                                       </xs:sequence>
+                                                                                </xs:complexType>
+                                                                         </xs:element>
+                                                                  </xs:sequence>
+                                                           </xs:complexType>
+                                                    </xs:element>
+                                             </xs:sequence>
+                                      </xs:complexType>
+                               </xs:element>
+                        </xs:sequence>
+                 </xs:complexType>
+          </xs:element>
+   </xs:schema>

@@ -28,6 +28,114 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
     <http:listener-config name="FlightSchool_Listener_Configuration" host="0.0.0.0" port="8082" basePath="flightschool" doc:name="HTTP Listener Configuration"/>
     <http:request-config name="FlightSchool_Basic_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" doc:name="HTTP Request Configuration"/>
     <http:request-config name="FlightSchool_AircraftURL_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" basePath="#[flowVars.path]" doc:name="HTTP Request Configuration"/>
+    <flow name="getFlightSchoolCertificationDetails">
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/certification/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="jsoncertdetails" value="{&quot;certification_list&quot;:[]}" mimeType="application/json" doc:name="jsoncertdetails" metadata:id="6bc534e5-1511-4e82-b49c-de8ed07f65fe"/>
+        <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/flightschool/api/certification?search={certificationname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="certificationname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
+            </http:request-builder>
+        </http:request>
+        <dw:transform-message doc:name="Transform Message" metadata:id="a577cae6-27fc-42de-a4ce-fc55fc94d379">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload.results.url]]></dw:set-payload>
+            <dw:set-variable variableName="acc"><![CDATA[%dw 1.0
+%output application/java
+---
+[]]]></dw:set-variable>
+        </dw:transform-message>
+        <response>
+            <dw:transform-message doc:name="Transform Message" metadata:id="7dbcfbea-1b44-4399-ba75-1db9e45bb340">
+                <dw:input-variable mimeType="application/json" variableName="jsoncertdetails"/>
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	CertificationDetails: {
+		(flowVars.jsoncertdetails.certification_list map ((certificationlist , indexOfCertificationlist) -> {
+			Certification: {
+				id: certificationlist.id,
+				name: certificationlist.name,
+				craft_count: certificationlist.craft_count,
+				pilot_count: certificationlist.pilot_count,
+				url: certificationlist.url,
+				pilots: {
+					(certificationlist.pilots map ((pilot , indexOfPilot) -> {
+						pilot: {
+							id: pilot.id,
+							name: pilot.name,
+							dob: pilot.dob as :date,
+							sex: pilot.sex,
+							url: pilot.url,
+							age: pilot.age,
+							aircraft_count: pilot.aircraft_count
+						}
+					}))
+				},
+				craftlist: {
+					(certificationlist.craft map ((craft , indexOfCraft) -> {
+						craft: {
+							id: craft.id,
+							name: craft.name,
+							certs: craft.certs,
+							pilot_count: craft.pilot_count,
+							url: craft.url
+						}
+					}))
+				}
+			}
+		}))
+	}
+}]]></dw:set-payload>
+            </dw:transform-message>
+        </response>
+        <response>
+            <foreach collection="#[flowVars.acc]" counterVariableName="acc_i" doc:name="For Each">
+                <dw:transform-message doc:name="Transform Message" metadata:id="54f8f7ab-2bd2-4665-99f8-77301e3745ea">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-payload>
+                    <dw:set-variable variableName="jsoncertdetails"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+certification_list: flowVars.jsoncertdetails.certification_list + payload
+}]]></dw:set-variable>
+                </dw:transform-message>
+                <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <set-payload value="#[flowVars.acc[flowVars.acc_i-1]]" doc:name="Set Payload"/>
+            </foreach>
+        </response>
+        <foreach collection="#[payload]" doc:name="For Each">
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+(payload match /^.*com(.*)$/)[1]]]></dw:set-payload>
+            </dw:transform-message>
+            <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/{pathtoresource}" method="GET" doc:name="HTTP">
+                <http:request-builder>
+                    <http:uri-param paramName="pathtoresource" value="#[payload]"/>
+                </http:request-builder>
+            </http:request>
+            <dw:transform-message doc:name="Transform Message" metadata:id="394f209d-d3a4-4c87-86a3-16434c1d66df">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-payload>
+                <dw:set-variable variableName="acc"><![CDATA[%dw 1.0
+%output application/java
+---
+flowVars.acc + payload]]></dw:set-variable>
+            </dw:transform-message>
+        </foreach>
+    </flow>
     <flow name="searchFlightSchoolCertifications">
         <http:listener config-ref="FlightSchool_Listener_Configuration" path="/certification/{name}" allowedMethods="GET" doc:name="HTTP"/>
         <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/flightschool/api/certification?search={certificationname}" method="GET" doc:name="HTTP">

@@ -1,0 +1,133 @@
+{
+ "title": "Certification Details List",
+ "$schema": "http://json-schema.org/draft-04/schema",
+ "description": "the root that contains the array",
+ "type": "object",
+ "required": [ "certification_list"],
+ "properties": { "certification_list" : {
+ "description": "An array of certification details, useful for HATEOAS",
+ "type": "array",
+ "items": {
+  "description": "A certification with details about pilots and aircraft",
+  "type": "object",
+  "required": [
+   "id",
+   "name",
+   "craft_count",
+   "pilot_count",
+   "url",
+   "pilots",
+   "craft"
+  ],
+  "properties": {
+   "id": {
+    "description": "The unique integer that identifies the certification",
+    "type": "integer"
+   },
+   "name": {
+    "description": "The certification name",
+    "type": "string"
+   },
+   "craft_count": {
+    "description": "The number of aircraft on this certification",
+    "type": "integer"
+   },
+   "pilot_count": {
+    "description": "The number of pilots who earned this certification",
+    "type": "integer"
+   },
+   "url": {
+    "format": "uri",
+    "description": "The hypermedia URL for the certification",
+    "type": "string"
+   },
+   "pilots": {
+    "description": "The pilots who earned the certification",
+    "type": "array",
+    "items": {
+     "description": "A pilot who earned the certification",
+     "type": "object",
+     "required": [
+      "id",
+      "name",
+      "dob",
+      "sex",
+      "url",
+      "age",
+      "aircraft_count"
+     ],
+     "properties": {
+      "id": {
+       "description": "The unique integer id for the pilot",
+       "type": "integer"
+      },
+      "name": {
+       "description": "The pilot's name",
+       "type": "string"
+      },
+      "dob": {
+       "format": "date",
+       "description": "The date of birth in YYYY-MM-DD format.",
+       "type": "string"
+      },
+      "sex": {
+       "description": "The pilot's sex.",
+       "type": "string"
+      },
+      "url": {
+       "format": "uri",
+       "description": "The hypermedia url for this resource",
+       "type": "string"
+      },
+      "age": {
+       "description": "The pilot's age in years.",
+       "type": "integer"
+      },
+      "aircraft_count": {
+       "description": "The number of aircraft this pilot is certified to fly",
+       "type": "integer"
+      }
+     }
+    }
+   },
+   "craft": {
+    "description": "The aircraft that the certification pertains to",
+    "type": "array",
+    "items": {
+     "description": "An aircraft that the certification pertains to",
+     "type": "object",
+     "required": [
+      "id",
+      "name",
+      "certs",
+      "pilot_count",
+      "url"
+     ],
+     "properties": {
+      "id": {
+       "description": "The unique integer identifier for the aircraft",
+       "type": "integer"
+      },
+      "name": {
+       "description": "The aircraft name",
+       "type": "string"
+      },
+      "certs": {
+       "description": "The certifications that pertain to the aircraft",
+       "type": "string"
+      },
+      "pilot_count": {
+       "description": "The number of pilots certified to fly this aircraft",
+       "type": "integer"
+      },
+      "url": {
+       "format": "uri",
+       "description": "the hypermedia url for this resource",
+       "type": "string"
+      }
+     }
+    }
+   }
+  }
+ }}}
+}
