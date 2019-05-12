@@ -1,0 +1,110 @@
+<AircraftList>
+	<Aircraft>
+		<id>38</id>
+		<name>Cessna 414</name>
+		<certs>light, twin-engine</certs>
+		<pilot_count>14</pilot_count>
+		<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/38/</url>
+		<pilots>
+			<pilot>
+				<id>21</id>
+				<name>Sophie "Anti-matter" Federov</name>
+				<dob>1983-08-14</dob>
+				<sex>female</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/21/</url>
+				<age>35</age>
+				<aircraft_count>29</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>12</id>
+				<name>Tom "Stinger" Jordan</name>
+				<dob>1973-06-20</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/12/</url>
+				<age>45</age>
+				<aircraft_count>9</aircraft_count>
+			</pilot>
+		</pilots>
+	</Aircraft>
+	<Aircraft>
+		<id>42</id>
+		<name>Cessna 404 Titan</name>
+		<certs>twin-engine</certs>
+		<pilot_count>7</pilot_count>
+		<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/42/</url>
+		<pilots>
+			<pilot>
+				<id>28</id>
+				<name>Mike "Sparrow" Vasquez</name>
+				<dob>1979-03-28</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/28/</url>
+				<age>40</age>
+				<aircraft_count>15</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>4</id>
+				<name>Mike "Viper" Metcalf</name>
+				<dob>1977-08-25</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/4/</url>
+				<age>41</age>
+				<aircraft_count>17</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>21</id>
+				<name>Sophie "Anti-matter" Federov</name>
+				<dob>1983-08-14</dob>
+				<sex>female</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/21/</url>
+				<age>35</age>
+				<aircraft_count>29</aircraft_count>
+			</pilot>
+		</pilots>
+	</Aircraft>
+	<Aircraft>
+		<id>45</id>
+		<name>Cessna T303 Crusader</name>
+		<certs>twin-engine</certs>
+		<pilot_count>7</pilot_count>
+		<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/45/</url>
+		<pilots>
+			<pilot>
+				<id>3</id>
+				<name>Jessica "Goose" Bradshaw</name>
+				<dob>1975-07-19</dob>
+				<sex>female</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/3/</url>
+				<age>43</age>
+				<aircraft_count>15</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>28</id>
+				<name>Mike "Sparrow" Vasquez</name>
+				<dob>1979-03-28</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/28/</url>
+				<age>40</age>
+				<aircraft_count>15</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>4</id>
+				<name>Mike "Viper" Metcalf</name>
+				<dob>1977-08-25</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/4/</url>
+				<age>41</age>
+				<aircraft_count>17</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>21</id>
+				<name>Sophie "Anti-matter" Federov</name>
+				<dob>1983-08-14</dob>
+				<sex>female</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/21/</url>
+				<age>35</age>
+				<aircraft_count>29</aircraft_count>
+			</pilot>
+		</pilots>
+	</Aircraft>
+</AircraftList>

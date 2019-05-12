@@ -151,6 +151,9 @@ public class Aircraft {
 	public Integer getPilotCount() {
 		return pilotCount;
 	}
+	public Integer getpilot_count(){
+		return pilotCount;
+	}
 
 	/**
 	 * The number of pilots at Flight School who are certified to fly this
@@ -159,6 +162,9 @@ public class Aircraft {
 	 */
 	@JsonProperty("pilot_count")
 	public void setPilotCount(Integer pilotCount) {
+		this.pilotCount = pilotCount;
+	}
+	public void setpilot_count(Integer pilotCount){
 		this.pilotCount = pilotCount;
 	}
 

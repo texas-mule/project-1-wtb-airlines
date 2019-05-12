@@ -200,6 +200,9 @@ public class AircraftPilot {
 	public Integer getAircraftCount() {
 		return aircraftCount;
 	}
+	public Integer getaircraft_count(){
+		return aircraftCount;
+	}
 
 	/**
 	 * The number of aircraft this pilot is certified to fly. (Required)
@@ -207,6 +210,9 @@ public class AircraftPilot {
 	 */
 	@JsonProperty("aircraft_count")
 	public void setAircraftCount(Integer aircraftCount) {
+		this.aircraftCount = aircraftCount;
+	}
+	public void setaircraft_count(Integer aircraftCount){
 		this.aircraftCount = aircraftCount;
 	}
 

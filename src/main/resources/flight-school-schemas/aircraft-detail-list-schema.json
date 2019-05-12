@@ -1,0 +1,168 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "aircraftlist"
+  ],
+"properties": {
+    "aircraftlist": {
+      "$id": "#/properties/aircraftlist",
+      "type": "array",
+      "title": "The Aircraftlist Schema",
+      "items": {
+        "$id": "#/properties/aircraftlist/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "id",
+          "name",
+          "certs",
+          "pilot_count",
+          "url",
+          "pilots"
+        ],
+        "properties": {
+          "id": {
+            "$id": "#/properties/aircraftlist/items/properties/id",
+            "type": "integer",
+            "title": "The Id Schema",
+            "default": 0,
+            "examples": [
+              38
+            ]
+          },
+          "name": {
+            "$id": "#/properties/aircraftlist/items/properties/name",
+            "type": "string",
+            "title": "The Name Schema",
+            "default": "",
+            "examples": [
+              "Cessna 414"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "certs": {
+            "$id": "#/properties/aircraftlist/items/properties/certs",
+            "type": "string",
+            "title": "The Certs Schema",
+            "default": "",
+            "examples": [
+              "light, twin-engine"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "pilot_count": {
+            "$id": "#/properties/aircraftlist/items/properties/pilot_count",
+            "type": "integer",
+            "title": "The Pilot_count Schema",
+            "default": 0,
+            "examples": [
+              14
+            ]
+          },
+          "url": {
+            "$id": "#/properties/aircraftlist/items/properties/url",
+            "type": "string",
+            "title": "The Url Schema",
+            "default": "",
+            "examples": [
+              "https://flightschool.joshquizzes.com/flightschool/api/aircraft/38/"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "pilots": {
+            "$id": "#/properties/aircraftlist/items/properties/pilots",
+            "type": "array",
+            "title": "The Pilots Schema",
+            "items": {
+              "$id": "#/properties/aircraftlist/items/properties/pilots/items",
+              "type": "object",
+              "title": "The Items Schema",
+              "required": [
+                "id",
+                "name",
+                "dob",
+                "sex",
+                "url",
+                "age",
+                "aircraft_count"
+              ],
+              "properties": {
+                "id": {
+                  "$id": "#/properties/aircraftlist/items/properties/pilots/items/properties/id",
+                  "type": "integer",
+                  "title": "The Id Schema",
+                  "default": 0,
+                  "examples": [
+                    20
+                  ]
+                },
+                "name": {
+                  "$id": "#/properties/aircraftlist/items/properties/pilots/items/properties/name",
+                  "type": "string",
+                  "title": "The Name Schema",
+                  "default": "",
+                  "examples": [
+                    "Charles \"Black Mamba\" Mercado"
+                  ],
+                  "pattern": "^(.*)$"
+                },
+                "dob": {
+                  "$id": "#/properties/aircraftlist/items/properties/pilots/items/properties/dob",
+                  "type": "string",
+                  "title": "The Dob Schema",
+                  "default": "",
+                  "examples": [
+                    "1981-09-13"
+                  ],
+                  "pattern": "^(.*)$"
+                },
+                "sex": {
+                  "$id": "#/properties/aircraftlist/items/properties/pilots/items/properties/sex",
+                  "type": "string",
+                  "title": "The Sex Schema",
+                  "default": "",
+                  "examples": [
+                    "male"
+                  ],
+                  "pattern": "^(.*)$"
+                },
+                "url": {
+                  "$id": "#/properties/aircraftlist/items/properties/pilots/items/properties/url",
+                  "type": "string",
+                  "title": "The Url Schema",
+                  "default": "",
+                  "examples": [
+                    "https://flightschool.joshquizzes.com/flightschool/api/pilot/20/"
+                  ],
+                  "pattern": "^(.*)$"
+                },
+                "age": {
+                  "$id": "#/properties/aircraftlist/items/properties/pilots/items/properties/age",
+                  "type": "integer",
+                  "title": "The Age Schema",
+                  "default": 0,
+                  "examples": [
+                    37
+                  ]
+                },
+                "aircraft_count": {
+                  "$id": "#/properties/aircraftlist/items/properties/pilots/items/properties/aircraft_count",
+                  "type": "integer",
+                  "title": "The Aircraft_count Schema",
+                  "default": 0,
+                  "examples": [
+                    14
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "array",
+  "title": "The Root Schema",
+  "items": {
+    "$id": "#/items",
+    "type": "string",
+    "title": "The Items Schema",
+    "default": "",
+    "examples": [
+      "https://flightschool.joshquizzes.com/flightschool/api/aircraft/38/",
+      "https://flightschool.joshquizzes.com/flightschool/api/aircraft/42/",
+      "https://flightschool.joshquizzes.com/flightschool/api/aircraft/45/",
+      "https://flightschool.joshquizzes.com/flightschool/api/aircraft/11/",
+      "https://flightschool.joshquizzes.com/flightschool/api/aircraft/43/",
+      "https://flightschool.joshquizzes.com/flightschool/api/aircraft/44/"
+    ],
+    "pattern": "^(.*)$"
+  }
+}
