@@ -1,0 +1,5 @@
+<spring:beans>
+	<spring:bean id="GetPilotID" name="GetPilotID"
+		class="com.revature.project1mule.flightschool.flowHelpers.GetPilotID">
+	</spring:bean>
+</spring:beans>

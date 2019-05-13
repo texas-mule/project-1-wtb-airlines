@@ -1,0 +1,66 @@
+{
+ "title": "Aircraft List",
+ "$schema": "http://json-schema.org/draft-04/schema",
+ "description": "Lists the aircraft Flight School pilots are trained to fly.",
+ "type": "object",
+ "required": [
+  "count",
+  "next",
+  "previous",
+  "results"
+ ],
+ "properties": {
+  "count": {
+   "description": "The number of records in the result set.",
+   "type": "integer"
+  },
+  "next": {
+   "format": "uri",
+   "description": "Link to the next page of results.",
+   "type": ["string", "null"]
+  },
+  "previous": {
+   "format": "uri",
+   "description": "Link to the previous page of results.",
+   "type": ["string", "null"]
+  },
+  "results": {
+   "description": "Aircraft from the result set.",
+   "type": "array",
+   "items": {
+    "description": "An aircraft that Flight School pilots train to fly.",
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "certs",
+     "pilot_count",
+     "url"
+    ],
+    "properties": {
+     "id": {
+      "description": "The unique integer that identifies this aircraft.",
+      "type": "integer"
+     },
+     "name": {
+      "description": "The aircraft name.",
+      "type": "string"
+     },
+     "certs": {
+      "description": "A comma-separated list of the certifications that allow a pilot to fly this aircraft.",
+      "type": "string"
+     },
+     "pilot_count": {
+      "description": "The number of Flight School pilots who have been certified to fly this aircraft.",
+      "type": "integer"
+     },
+     "url": {
+      "format": "uri",
+      "description": "The hypermedia URL for the aircraft.",
+      "type": "string"
+     }
+    }
+   }
+  }
+ }
+}

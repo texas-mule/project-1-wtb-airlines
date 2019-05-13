@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:json="http://www.mulesoft.org/schema/mule/json"
-	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
 	xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
 	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
@@ -13,106 +13,364 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
-http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 	<http:listener-config name="HTTP_Listener_Configuration"
 		host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"
-		basePath="aircraft" />
+		basePath="flightschool" />
 	<ws:consumer-config name="Web_Service_Consumer"
 		wsdlLocation="http://localhost:8080/aircraft?wsdl" service="AircraftServiceService"
 		port="AircraftServicePort" serviceAddress="http://localhost:8080/aircraft"
 		doc:name="Web Service Consumer" />
-    <flow name="project1muleFlowGetAllManufacturers">
-		<http:listener config-ref="HTTP_Listener_Configuration"
-			path="/manufacturers" allowedMethods="GET" doc:name="HTTP" />
-		<logger level="INFO" doc:name="Logger" />
-        <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
-        </response>
-        <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getAircraftManufacturers" doc:name="Web Service Consumer"/>
-        </response>
-	</flow>
-    <flow name="project1muleFlowGetManufacturer">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/{manufacturer}" allowedMethods="GET" doc:name="HTTP"/>
-        <set-variable variableName="manufacturer" value="#[message.inboundProperties.'http.uri.params'.manufacturer]" doc:name="Manufacturer"/>
-        <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
-        </response>
-        <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getManufacturer" doc:name="Web Service Consumer"/>
-        </response>
-        <dw:transform-message doc:name="Transform Message" metadata:id="76e9cac0-0798-4df6-8578-4bb2b32d5860">
+    <http:request-config name="HTTP_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="HTTP_Request_no_host" protocol="HTTPS" host="#[flowVars.aircraftUrls[flowVars.counter]]" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="HTTP_Request_From_Aircraft_URL" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" basePath="#[flowVars.path]" doc:name="HTTP Request Configuration"/>
+    <http:listener-config name="FlightSchool_Listener_Configuration" host="0.0.0.0" port="8082" basePath="flightschool" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="FlightSchool_Basic_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="FlightSchool_AircraftURL_Request_Configuration" protocol="HTTPS" host="flightschool.joshquizzes.com" port="443" basePath="#[flowVars.path]" doc:name="HTTP Request Configuration"/>
+    <flow name="getFlightSchoolCertificationDetails">
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/certification/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="jsoncertdetails" value="{&quot;certification_list&quot;:[]}" mimeType="application/json" doc:name="jsoncertdetails" metadata:id="6bc534e5-1511-4e82-b49c-de8ed07f65fe"/>
+        <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/flightschool/api/certification?search={certificationname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="certificationname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
+            </http:request-builder>
+        </http:request>
+        <dw:transform-message doc:name="Transform Message" metadata:id="a577cae6-27fc-42de-a4ce-fc55fc94d379">
+            <dw:input-payload mimeType="application/json"/>
             <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload.results.url]]></dw:set-payload>
+            <dw:set-variable variableName="acc"><![CDATA[%dw 1.0
+%output application/java
+---
+[]]]></dw:set-variable>
+        </dw:transform-message>
+        <response>
+            <dw:transform-message doc:name="Transform Message" metadata:id="7dbcfbea-1b44-4399-ba75-1db9e45bb340">
+                <dw:input-variable mimeType="application/json" variableName="jsoncertdetails"/>
+                <dw:set-payload><![CDATA[%dw 1.0
 %output application/xml
-%namespace ns0 http://soap.revature.com/
 ---
 {
-	ns0#getManufacturer: {
-		manufacturer: flowVars.manufacturer as :string
+	CertificationDetails: {
+		(flowVars.jsoncertdetails.certification_list map ((certificationlist , indexOfCertificationlist) -> {
+			Certification: {
+				id: certificationlist.id,
+				name: certificationlist.name,
+				craft_count: certificationlist.craft_count,
+				pilot_count: certificationlist.pilot_count,
+				url: certificationlist.url,
+				pilots: {
+					(certificationlist.pilots map ((pilot , indexOfPilot) -> {
+						pilot: {
+							id: pilot.id,
+							name: pilot.name,
+							dob: pilot.dob as :date,
+							sex: pilot.sex,
+							url: pilot.url,
+							age: pilot.age,
+							aircraft_count: pilot.aircraft_count
+						}
+					}))
+				},
+				craftlist: {
+					(certificationlist.craft map ((craft , indexOfCraft) -> {
+						craft: {
+							id: craft.id,
+							name: craft.name,
+							certs: craft.certs,
+							pilot_count: craft.pilot_count,
+							url: craft.url
+						}
+					}))
+				}
+			}
+		}))
+	}
+}]]></dw:set-payload>
+            </dw:transform-message>
+        </response>
+        <response>
+            <foreach collection="#[flowVars.acc]" counterVariableName="acc_i" doc:name="For Each">
+                <dw:transform-message doc:name="Transform Message" metadata:id="54f8f7ab-2bd2-4665-99f8-77301e3745ea">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-payload>
+                    <dw:set-variable variableName="jsoncertdetails"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+certification_list: flowVars.jsoncertdetails.certification_list + payload
+}]]></dw:set-variable>
+                </dw:transform-message>
+                <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <set-payload value="#[flowVars.acc[flowVars.acc_i-1]]" doc:name="Set Payload"/>
+            </foreach>
+        </response>
+        <foreach collection="#[payload]" doc:name="For Each">
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+(payload match /^.*com(.*)$/)[1]]]></dw:set-payload>
+            </dw:transform-message>
+            <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/{pathtoresource}" method="GET" doc:name="HTTP">
+                <http:request-builder>
+                    <http:uri-param paramName="pathtoresource" value="#[payload]"/>
+                </http:request-builder>
+            </http:request>
+            <dw:transform-message doc:name="Transform Message" metadata:id="394f209d-d3a4-4c87-86a3-16434c1d66df">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-payload>
+                <dw:set-variable variableName="acc"><![CDATA[%dw 1.0
+%output application/java
+---
+flowVars.acc + payload]]></dw:set-variable>
+            </dw:transform-message>
+        </foreach>
+    </flow>
+    <flow name="searchFlightSchoolCertifications">
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/certification/{name}" allowedMethods="GET" doc:name="HTTP"/>
+        <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/flightschool/api/certification?search={certificationname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="certificationname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
+            </http:request-builder>
+        </http:request>
+        <dw:transform-message doc:name="Transform Message" metadata:id="ada7a9df-e284-4395-afd3-f9e82c277030">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	CertificationList: {
+		count: payload.count,
+		next: payload.next as :string default "null",
+		previous: payload.previous as :string default "null",
+		results: {
+			(payload.results map ((result , indexOfResult) -> {
+				result: {
+					id: result.id,
+					name: result.name,
+					craft_count: result.craft_count,
+					pilot_count: result.pilot_count,
+					url: result.url
+				}
+			}))
+		}
 	}
 }]]></dw:set-payload>
         </dw:transform-message>
-        <response>
-            <logger level="INFO" doc:name="Logger"/>
-        </response>
     </flow>
-    <flow name="project1muleFlowGetAircraft">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/{manufacturer}/{model}" allowedMethods="GET" doc:name="HTTP"/>
-        <set-variable variableName="manufacturer" value="#[message.inboundProperties.'http.uri.params'.manufacturer]" doc:name="Manufacturer"/>
-        <set-variable variableName="model" value="#[message.inboundProperties.'http.uri.params'.model]" doc:name="Model"/>
-        <dw:transform-message doc:name="Transform Message" metadata:id="6387f463-991c-4131-a23c-df87b8ee2c61">
-            <dw:set-payload><![CDATA[%dw 1.0
+    <flow name="getFlightSchoolAircraftDetails">
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/aircraft/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="aircraftdetailslist" value="{&quot;aircraftlist&quot;:[]}" doc:name="aircraftdetailslist" metadata:id="3eddd3c6-bb2d-4e55-a5cb-b5a7da0b8428" mimeType="application/json"/>
+        <response>
+            <dw:transform-message doc:name="Transform Message" metadata:id="2219a13c-a0b1-495b-aff7-3e9f36f21e2a">
+                <dw:input-payload mimeType="application/json"/>
+                <dw:set-payload><![CDATA[%dw 1.0
 %output application/xml
-%namespace ns0 http://soap.revature.com/
 ---
 {
-	ns0#getAircraftByManufacturerAndModel: {
-		manufacturer: flowVars.manufacturer as :string,
-		model: flowVars.model as :string
+	AircraftList: {
+		(payload.aircraftlist map ((aircraftlist , indexOfAircraftlist) -> {
+			Aircraft: {
+				id: aircraftlist.id,
+				name: aircraftlist.name,
+				certs: aircraftlist.certs,
+				pilot_count: aircraftlist.pilot_count,
+				url: aircraftlist.url,
+				pilots: {
+					(aircraftlist.pilots map ((pilot , indexOfPilot) -> {
+						pilot: {
+							id: pilot.id,
+							name: pilot.name,
+							dob: pilot.dob as :date,
+							sex: pilot.sex,
+							url: pilot.url,
+							age: pilot.age,
+							aircraft_count: pilot.aircraft_count
+						}
+					}))
+				}
+			}
+		}))
 	}
 }]]></dw:set-payload>
-        </dw:transform-message>
-        <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
+            </dw:transform-message>
         </response>
-        <logger level="INFO" doc:name="Logger"/>
         <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getAircraftByManufacturerAndModel" doc:name="Web Service Consumer"/>
+            <set-payload value="#[flowVars.aircraftdetailslist]" doc:name="Set Payload"/>
         </response>
-    </flow>
-    <flow name="project1muleFlowGetAircraftByManufacturer">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/{manufacturer}/all" doc:name="HTTP"/>
-        <set-variable variableName="manufacturer" value="#[message.inboundProperties.'http.uri.params'.manufacturer]" doc:name="Manufacturer"/>
-        <dw:transform-message doc:name="Transform Message" metadata:id="44db754f-66b3-4acf-b007-f10b11e3853d">
-            <dw:set-payload><![CDATA[%dw 1.0
-%output application/xml
-%namespace ns0 http://soap.revature.com/
+        <http:request config-ref="FlightSchool_Basic_Request_Configuration" path="/flightschool/api/aircraft?search={aircraftname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="aircraftname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
+            </http:request-builder>
+        </http:request>
+        <response>
+            <foreach collection="#[flowVars.acc]" counterVariableName="accCounter" doc:name="For Each">
+                <dw:transform-message doc:name="Transform Message" metadata:id="4023f95b-292e-46cb-8080-ecc14ef72fe9">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
 ---
 {
-	ns0#getAircraftByManufacturer: {
-		manufacturer: flowVars.manufacturer as :string
+}]]></dw:set-payload>
+                    <dw:set-variable variableName="aircraftdetailslist"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+aircraftlist: flowVars.aircraftdetailslist.aircraftlist + payload
+}
+]]></dw:set-variable>
+                </dw:transform-message>
+                <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <set-payload value="#[flowVars.acc[flowVars.accCounter-1]]" doc:name="Set Payload"/>
+            </foreach>
+        </response>
+        <dw:transform-message doc:name="Transform Message" metadata:id="03f3e9fc-7953-40d2-89d3-6c34a189e9b9">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-payload>
+            <dw:set-variable variableName="aircrafturls"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.results.url
+]]></dw:set-variable>
+            <dw:set-variable variableName="acc"><![CDATA[%dw 1.0
+%output application/java
+---
+[]]]></dw:set-variable>
+        </dw:transform-message>
+        <foreach collection="#[flowVars.aircrafturls]" doc:name="For Each">
+            <set-variable variableName="url" value="#[flowVars.aircrafturls[flowVars.counter-1]]" mimeType="application/java" doc:name="url" metadata:id="cf78e483-a2f5-4cec-8f7c-3586eace9b04"/>
+            <dw:transform-message doc:name="Transform Message" metadata:id="8b29033f-c8db-4d11-ab7f-484f61ec3c45">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-payload>
+                <dw:set-variable variableName="path"><![CDATA[%dw 1.0
+%output application/java
+---
+(flowVars.url as :string match /^.*com(.*)$/)[1]]]></dw:set-variable>
+            </dw:transform-message>
+            <http:request config-ref="FlightSchool_AircraftURL_Request_Configuration" path="/" method="GET" doc:name="HTTP"/>
+            <dw:transform-message doc:name="Transform Message" metadata:id="16f2f0f9-1350-456f-b2cd-afb8268098e1">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-payload>
+                <dw:set-variable variableName="acc"><![CDATA[%dw 1.0
+%output application/java
+---
+flowVars.acc + payload]]></dw:set-variable>
+            </dw:transform-message>
+        </foreach>
+    </flow>
+    <flow name="searchFlightSchoolAircraft">
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/aircraft/{name}" allowedMethods="GET" doc:name="HTTP"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/aircraft?search={aircraftname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="aircraftname" value="#[message.inboundProperties.'http.uri.params'.name]"/>
+            </http:request-builder>
+        </http:request>
+        <dw:transform-message doc:name="Transform Message" metadata:id="d8140297-70fd-4bcd-a5b8-24a92abcf664">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	AircraftList: {
+		count: payload.count,
+		next: payload.next as :string default "null",
+		previous: payload.previous as :string default "null",
+		results: {
+			(payload.results map ((result , indexOfResult) -> {
+				result: {
+					id: result.id,
+					name: result.name,
+					certs: result.certs,
+					pilot_count: result.pilot_count,
+					url: result.url
+				}
+			}))
+		}
 	}
 }]]></dw:set-payload>
+            <dw:set-variable variableName="resxml"><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </flow>
+    <flow name="getFlightSchoolPilotDetails">
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/pilot/{name}/details" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="pilotname" value="#[message.inboundProperties.'http.uri.params'.name]" doc:name="pilotname"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/pilot?search={pilotname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="pilotname" value="#[flowVars.pilotname]"/>
+            </http:request-builder>
+        </http:request>
+        <dw:transform-message doc:name="Transform Message" metadata:id="b6865f03-65fc-4478-89aa-b960f1c16d6f">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	pilotid: payload.results[0].id
+}]]></dw:set-payload>
+            <dw:set-variable variableName="pilotid"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.results[0].id]]></dw:set-variable>
         </dw:transform-message>
         <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
+            <json:json-to-xml-transformer doc:name="JSON to XML"/>
         </response>
         <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getAircraftByManufacturer" doc:name="Web Service Consumer"/>
+            <dw:transform-message doc:name="Transform Message" metadata:id="f034097d-f5f4-4c89-af3d-e2cab1b21fd8">
+                <dw:input-payload mimeType="application/json"/>
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	pilot: payload
+}]]></dw:set-payload>
+            </dw:transform-message>
         </response>
-        <response>
-            <logger level="INFO" doc:name="Logger"/>
-        </response>
+
+        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/pilot/{pilotid}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="pilotid" value="#[flowVars.pilotid]"/>
+            </http:request-builder>
+        </http:request>
     </flow>
-	<flow name="project1muleFlowGetAllAircraft">
-		<http:listener config-ref="HTTP_Listener_Configuration"
-			path="/all" allowedMethods="GET" doc:name="HTTP" />
-		<logger level="INFO" doc:name="Logger" />
+    <flow name="searchFlightSchoolPilotNames">
+        <http:listener config-ref="FlightSchool_Listener_Configuration" path="/pilot/{name}" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="pilotname" value="#[message.inboundProperties.'http.uri.params'.name]" doc:name="pilotname"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/flightschool/api/pilot?search={pilotname}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="pilotname" value="#[flowVars.pilotname]"/>
+            </http:request-builder>
+        </http:request>
         <response>
-            <json:xml-to-json-transformer doc:name="XML to JSON"/>
+            <mulexml:object-to-xml-transformer doc:name="Object to XML"/>
         </response>
         <response>
-            <ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft" doc:name="Web Service Consumer"/>
+            <json:json-to-object-transformer returnClass="com.revature.project1mule.flightschool.responsePojos.PilotList" doc:name="JSON to Object"/>
         </response>
-	</flow>
+
+    </flow>
+
 </mule>

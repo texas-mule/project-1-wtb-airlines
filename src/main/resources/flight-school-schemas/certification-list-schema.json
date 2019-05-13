@@ -1,0 +1,67 @@
+{
+ "title": "Certification List", 
+ "$schema": "http://json-schema.org/draft-04/schema",
+ "description": "The valuable, legitimate certifications of Flight School",
+ "type": "object",
+ "required": [
+  "count",
+  "next",
+  "previous",
+  "results"
+ ],
+ "properties": {
+  "count": {
+   "description": "The number of records in the result set.",
+   "type": "integer"
+  },
+  "next": {
+   "format": "uri",
+   "description": "The link to the next page of certifications.",
+   "type": ["string", "null"]
+  },
+  "previous": {
+   "format": "uri",
+   "description": "The link to the previous page of certifications.",
+   "type": ["string", "null"]
+  },
+  "results": {
+   "description": "The certifications in the result set.",
+   "type": "array",
+   "title": "The Results Schema",
+   "items": {
+    "description": "A certification that Flight School students can earn.",
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "craft_count",
+     "pilot_count",
+     "url"
+    ],
+    "properties": {
+     "id": {
+      "description": "The unique integer identifier for the certification.",
+      "type": "integer"
+     },
+     "name": {
+      "description": "The name of the certification.",
+      "type": "string"
+     },
+     "craft_count": {
+      "description": "The number of aircraft a pilot with this certification will be able to fly.",
+      "type": "integer"
+     },
+     "pilot_count": {
+      "description": "The number of Flight School pilots who have earned this legitimate certification.",
+      "type": "integer"
+     },
+     "url": {
+      "format": "uri",
+      "description": "The hypermedia URL for the certification.",
+      "type": "string"
+     }
+    }
+   }
+  }
+ }
+}

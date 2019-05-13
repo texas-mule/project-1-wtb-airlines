@@ -1,0 +1,32 @@
+<CertificationList>
+	<count>14</count>
+	<next>https://flightschool.joshquizzes.com/flightschool/api/certification?page=2
+	</next>
+	<previous>null</previous>
+	<results>
+		<result>
+			<id>1</id>
+			<name>light</name>
+			<craft_count>9</craft_count>
+			<pilot_count>7</pilot_count>
+			<url>https://flightschool.joshquizzes.com/flightschool/api/certification/1/
+			</url>
+		</result>
+		<result>
+			<id>8</id>
+			<name>very light jet</name>
+			<craft_count>3</craft_count>
+			<pilot_count>6</pilot_count>
+			<url>https://flightschool.joshquizzes.com/flightschool/api/certification/8/
+			</url>
+		</result>
+		<result>
+			<id>9</id>
+			<name>light business</name>
+			<craft_count>1</craft_count>
+			<pilot_count>5</pilot_count>
+			<url>https://flightschool.joshquizzes.com/flightschool/api/certification/9/
+			</url>
+		</result>
+	</results>
+</CertificationList>

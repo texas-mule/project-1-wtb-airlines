@@ -1,0 +1,176 @@
+<CertificationDetails>
+	<Certification>
+		<id>1</id>
+		<name>light</name>
+		<craft_count>9</craft_count>
+		<pilot_count>7</pilot_count>
+		<url>https://flightschool.joshquizzes.com/flightschool/api/certification/1/
+		</url>
+		<pilots>
+			<pilot>
+				<id>27</id>
+				<name>Maria "Psycho" Dillon</name>
+				<dob>1980-01-01</dob>
+				<sex>female</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/27/
+				</url>
+				<age>39</age>
+				<aircraft_count>28</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>22</id>
+				<name>Rick "Cougar" Turner</name>
+				<dob>1985-07-15</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/22/
+				</url>
+				<age>33</age>
+				<aircraft_count>9</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>7</id>
+				<name>Sandra "Wolfsbane" Ruth</name>
+				<dob>1990-02-13</dob>
+				<sex>female</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/7/
+				</url>
+				<age>29</age>
+				<aircraft_count>20</aircraft_count>
+			</pilot>
+		</pilots>
+		<craftlist>
+			<craft>
+				<id>35</id>
+				<name>Piper Aerostar</name>
+				<certs>transport, twin-engine, light</certs>
+				<pilot_count>20</pilot_count>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/35/
+				</url>
+			</craft>
+			<craft>
+				<id>26</id>
+				<name>Eurocopter EC135</name>
+				<certs>twin-engine, light, utility rotor</certs>
+				<pilot_count>18</pilot_count>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/35/
+				</url>
+			</craft>
+		</craftlist>
+	</Certification>
+	<Certification>
+		<id>8</id>
+		<name>very light jet</name>
+		<craft_count>3</craft_count>
+		<pilot_count>6</pilot_count>
+		<url>https://flightschool.joshquizzes.com/flightschool/api/certification/8/
+		</url>
+		<pilots>
+			<pilot>
+				<id>32</id>
+				<name>Pete "Tyrant" Washington</name>
+				<dob>1996-02-28</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/32/
+				</url>
+				<age>23</age>
+				<aircraft_count>26</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>15</id>
+				<name>Lena "Skunk" Stallman</name>
+				<dob>1998-11-01</dob>
+				<sex>female</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/15/
+				</url>
+				<age>20</age>
+				<aircraft_count>31</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>4</id>
+				<name>Mike "Viper" Metcalf</name>
+				<dob>1977-08-25</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/4/
+				</url>
+				<age>41</age>
+				<aircraft_count>17</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>26</id>
+				<name>Henry "Messy" Cortez</name>
+				<dob>1992-02-20</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/26/
+				</url>
+				<age>27</age>
+				<aircraft_count>12</aircraft_count>
+			</pilot>
+		</pilots>
+		<craftlist>
+			<craft>
+				<id>19</id>
+				<name>HA-420 HondaJet</name>
+				<certs>light business, very light jet</certs>
+				<pilot_count>8</pilot_count>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/19/
+				</url>
+			</craft>
+			<craft>
+				<id>18</id>
+				<name>Cirrus Vision SF50</name>
+				<certs>very light jet</certs>
+				<pilot_count>6</pilot_count>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/18/
+				</url>
+			</craft>
+			<craft>
+				<id>18</id>
+				<name>Phenom 100</name>
+				<certs>very light jet</certs>
+				<pilot_count>6</pilot_count>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/20/
+				</url>
+			</craft>
+		</craftlist>
+	</Certification>
+	<Certification>
+		<id>9</id>
+		<name>light business</name>
+		<craft_count>1</craft_count>
+		<pilot_count>5</pilot_count>
+		<url>https://flightschool.joshquizzes.com/flightschool/api/certification/9/
+		</url>
+		<pilots>
+			<pilot>
+				<id>4</id>
+				<name>Mike "Viper" Metcalf</name>
+				<dob>1977-08-25</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/4/
+				</url>
+				<age>41</age>
+				<aircraft_count>17</aircraft_count>
+			</pilot>
+			<pilot>
+				<id>10</id>
+				<name>Marcus "Sundown" Williams</name>
+				<dob>1985-12-24</dob>
+				<sex>male</sex>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/pilot/10/
+				</url>
+				<age>33</age>
+				<aircraft_count>27</aircraft_count>
+			</pilot>
+		</pilots>
+		<craftlist>
+			<craft>
+				<id>19</id>
+				<name>HA-420 HondaJet</name>
+				<certs>light business, very light jet</certs>
+				<pilot_count>8</pilot_count>
+				<url>https://flightschool.joshquizzes.com/flightschool/api/aircraft/19/
+				</url>
+			</craft>
+		</craftlist>
+	</Certification>
+</CertificationDetails>
