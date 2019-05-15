@@ -1,0 +1,48 @@
+{
+ "title": "Aircraft Supplier Catalog",
+ "$schema": "http://json-schema.org/draft-04/schema",
+ "description": "A parsed list of aircraft with the most pertinent details.",
+ "type": "array",
+ "items": {
+  "type": "object",
+  "required": [
+   "id",
+   "name",
+   "speed",
+   "useful_load",
+   "range",
+   "passenger_capcity",
+   "size"
+  ],
+  "properties": {
+   "id": {
+    "description": "The unique integer identifier for this aircraft from this supplier.",
+    "type": "integer"
+   },
+   "name": {
+    "description": "The name of the aircraft.",
+    "type": "string"
+   },
+   "speed": {
+    "description": "This aircraft's maximum cruising speed.",
+    "type": "integer"
+   },
+   "useful_load": {
+    "description": "This aircraft's maximum carrying capacity.",
+    "type": "integer"
+   },
+   "range": {
+    "description": "This aircraft's maximum flight range.",
+    "type": "integer"
+   },
+   "passenger_capacity": {
+    "description": "This aircraft's maximum passenger capacity.",
+    "type": "integer"
+   },
+   "size": {
+    "description": "This aircraft's relative size.",
+    "type": "integer"
+   }
+  }
+ }
+}

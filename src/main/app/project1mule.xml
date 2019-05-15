@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:wmq="http://www.mulesoft.org/schema/mule/ee/wmq" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:wmq="http://www.mulesoft.org/schema/mule/ee/wmq" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
 	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
 	xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
@@ -15,7 +15,8 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
-http://www.mulesoft.org/schema/mule/ee/wmq http://www.mulesoft.org/schema/mule/ee/wmq/current/mule-wmq-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/wmq http://www.mulesoft.org/schema/mule/ee/wmq/current/mule-wmq-ee.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd">
 	<http:listener-config name="HTTP_Listener_Configuration"
 		host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"
 		basePath="aircraft" />
@@ -454,21 +455,7 @@ payload.results[0].id]]></dw:set-variable>
         <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="HTTP"/>
         <logger level="INFO" doc:name="Logger"/>
         <response>
-            <set-payload value="&lt;body&gt; 
-&lt;h1&gt;Welcome to the Aircraft API&lt;/h1&gt; 
-&lt;ul&gt;
- &lt;li&gt;/all - lists all aircraft in the database&lt;/li&gt;
- &lt;li&gt;/manufacturers - lists all aircraft manufacturers in the database&lt;/li&gt; 
- &lt;li&gt;/{Manufacturer}/all - lists all aircraft made by that manufacturer (e.g. /Cessna/all)&lt;/li&gt; 
- &lt;li&gt;/{Manufacturer}/{Model} - lists the specific aircraft made by that manufacturer (e.g. /Cessna/Skyhawk)&lt;/li&gt; 
- &lt;li&gt;/fs/pilot/{name} - search and display pilots by name&lt;/li&gt; 
- &lt;li&gt;/fs/pilot/{name}/details - search and display the list of aircraft each pilot is certified to fly by pilot name&lt;/li&gt; 
- &lt;li&gt;/fs/aircraft/{name} - search and display aircraft by name&lt;/li&gt; 
- &lt;li&gt;/fs/aircraft/{name}/details - search and display the list of pilots who can fly each aircraft by aircraft name &lt;/li&gt; 
- &lt;li&gt;/fs/certification/{name} - search and display certifications by name &lt;/li&gt; 
- &lt;li&gt;/fs/certification/{name}/details - search and display the list of pilots who have earned each certification and the list of aircraft each certification pertains to by certification name&lt;/li&gt; 
- &lt;/ul&gt; 
- &lt;/body&gt; " mimeType="text/html" doc:name="Set Payload"/>
+            <set-payload value="&lt;body&gt;  &lt;h1&gt;Welcome to the Aircraft API&lt;/h1&gt;  &lt;ul&gt;  &lt;li&gt;/all - lists all aircraft in the database&lt;/li&gt;  &lt;li&gt;/manufacturers - lists all aircraft manufacturers in the database&lt;/li&gt;   &lt;li&gt;/{Manufacturer}/all - lists all aircraft made by that manufacturer (e.g. /Cessna/all)&lt;/li&gt;   &lt;li&gt;/{Manufacturer}/{Model} - lists the specific aircraft made by that manufacturer (e.g. /Cessna/Skyhawk)&lt;/li&gt;   &lt;li&gt;/fs/pilot/{name} - search and display pilots by name&lt;/li&gt;   &lt;li&gt;/fs/pilot/{name}/details - search and display the list of aircraft each pilot is certified to fly by pilot name&lt;/li&gt;   &lt;li&gt;/fs/aircraft/{name} - search and display aircraft by name&lt;/li&gt;   &lt;li&gt;/fs/aircraft/{name}/details - search and display the list of pilots who can fly each aircraft by aircraft name &lt;/li&gt;   &lt;li&gt;/fs/certification/{name} - search and display certifications by name &lt;/li&gt;   &lt;li&gt;/fs/certification/{name}/details - search and display the list of pilots who have earned each certification and the list of aircraft each certification pertains to by certification name&lt;/li&gt;   &lt;/ul&gt;   &lt;/body&gt; " mimeType="text/html" doc:name="Set Payload"/>
         </response>
     </flow>
     <flow name="searchFlightSchoolPilotNames">
