@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
 	xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:ws="http://www.mulesoft.org/schema/mule/ws"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
@@ -9,11 +9,13 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<http:listener-config name="mule-airline-httpListenerConfig"
 		host="0.0.0.0" port="8086" doc:name="HTTP Listener Configuration" />
 	<apikit:config name="mule-airline-config" raml="mule-airline.raml"
 		consoleEnabled="true" doc:name="Router" keepRamlBaseUri="false" />
+    <db:generic-config name="Elephant_SQL_route_Database_Configuration" url="jdbc:postgresql://echo.db.elephantsql.com:5432/fmdwmvhp?user=fmdwmvhp&amp;password=cjYHdQ9o40opLTL-0ZJ4HfA2gdu2N0CD" driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration"/>
 	<flow name="mule-airline-main">
 		<http:listener config-ref="mule-airline-httpListenerConfig"
 			path="/api/*" doc:name="HTTP" />
@@ -37,14 +39,18 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 		<set-payload value="Route 1 deleted!" doc:name="Set Payload" />
 	</flow>
 	<flow name="get:/route:mule-airline-config">
-		<set-payload
-			value="[&#xA; {&#xA;  &quot;id&quot;: 1,&#xA;  &quot;name&quot;: &quot;NY LA daily&quot;,&#xA;  &quot;distance&quot;: 4000,&#xA;  &quot;aircraft&quot;: &quot;Boeing 737&quot;,&#xA;  &quot;capacity&quot;: 180,&#xA;  &quot;pilot&quot;: &quot;Sophie \&quot;Anti-Matter\&quot; Federov&quot;&#xA; },&#xA; {&#xA;  &quot;id&quot;: 2,&#xA;  &quot;name&quot;: &quot;Honolulu Seattle weekly&quot;,&#xA;  &quot;distance&quot;: 5000,&#xA;  &quot;aircraft&quot;: &quot;Airbus A330&quot;,&#xA;  &quot;capacity&quot;: 240,&#xA;  &quot;pilot&quot;: &quot;Pete \&quot;Tyrant\&quot; Washington&quot;&#xA; }&#xA;]"
-			doc:name="Set Payload" />
+        <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT * FROM route;]]></db:parameterized-query>
+        </db:select>
+
 	</flow>
 	<flow name="get:/route/{routeID}:mule-airline-config">
-		<set-payload
-			value="{&#xA; &quot;id&quot;: 1,&#xA; &quot;name&quot;: &quot;NY LA daily&quot;,&#xA; &quot;distance&quot;: 4000,&#xA; &quot;aircraft&quot;: &quot;Boeing 737&quot;,&#xA; &quot;aircraft_id&quot;: 28&#xA; &quot;capacity&quot;: 180,&#xA; &quot;range&quot;: 4000,&#xA; &quot;useful_load&quot;: 48000,&#xA; &quot;speed&quot;: 300,&#xA; &quot;requested_range&quot;: 4300,&#xA; &quot;requested_capacity&quot;: 90,&#xA; &quot;pilot&quot;: &quot;Sophie \&quot;Anti-Matter\&quot; Federov&quot;,&#xA; &quot;pilot_id&quot;: 21,&#xA; &quot;pilot_age&quot;: 34,&#xA; &quot;created&quot;: 2019-05-14T10:25:01+00:00,&#xA; &quot;modified&quot;: 2019-05-14T10:25:01+00:00&#xA;}"
-			doc:name="Set Payload" />
+        <set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]" doc:name="Set Payload"/>
+        <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
+            <db:in-param name="id" value="#[payload]" />
+        </db:select>
+
 	</flow>
 	<flow name="post:/route:mule-airline-config">
 		<dw:transform-message doc:name="Set query params to variables">
