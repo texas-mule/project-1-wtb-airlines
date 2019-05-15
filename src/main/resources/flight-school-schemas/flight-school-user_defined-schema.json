@@ -1,0 +1,79 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "array",
+  "title": "The Root Schema",
+  "items": {
+    "$id": "#/items",
+    "type": "object",
+    "title": "The Items Schema",
+    "required": [
+      "id",
+      "name",
+      "distance",
+      "aircraft",
+      "capacity",
+      "pilot"
+    ],
+    "properties": {
+      "id": {
+        "$id": "#/items/properties/id",
+        "type": "integer",
+        "title": "The Id Schema",
+        "default": 0,
+        "examples": [
+          1
+        ]
+      },
+      "name": {
+        "$id": "#/items/properties/name",
+        "type": "string",
+        "title": "The Name Schema",
+        "default": "",
+        "examples": [
+          "NY LA daily"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "distance": {
+        "$id": "#/items/properties/distance",
+        "type": "integer",
+        "title": "The Distance Schema",
+        "default": 0,
+        "examples": [
+          4000
+        ]
+      },
+      "aircraft": {
+        "$id": "#/items/properties/aircraft",
+        "type": "string",
+        "title": "The Aircraft Schema",
+        "default": "",
+        "examples": [
+          "Boeing 737"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "capacity": {
+        "$id": "#/items/properties/capacity",
+        "type": "integer",
+        "title": "The Capacity Schema",
+        "default": 0,
+        "examples": [
+          180
+        ]
+      },
+      "pilot": {
+        "$id": "#/items/properties/pilot",
+        "type": "string",
+        "title": "The Pilot Schema",
+        "default": "",
+        "examples": [
+          "Sophie \"Anti-Matter\" Federov"
+        ],
+        "pattern": "^(.*)$"
+      }
+    }
+  }
+}
