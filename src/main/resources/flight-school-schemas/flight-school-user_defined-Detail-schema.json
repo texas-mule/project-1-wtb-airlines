@@ -1,0 +1,176 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "id",
+    "name",
+    "distance",
+    "aircraft",
+    "aircraft_id",
+    "capacity",
+    "range",
+    "useful_load",
+    "speed",
+    "requested_range",
+    "requested_capacity",
+    "pilot",
+    "pilot_id",
+    "pilot_age",
+    "created",
+    "modified"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The Id Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "The Name Schema",
+      "default": "",
+      "examples": [
+        "NY LA daily"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "distance": {
+      "$id": "#/properties/distance",
+      "type": "integer",
+      "title": "The Distance Schema",
+      "default": 0,
+      "examples": [
+        4000
+      ]
+    },
+    "aircraft": {
+      "$id": "#/properties/aircraft",
+      "type": "string",
+      "title": "The Aircraft Schema",
+      "default": "",
+      "examples": [
+        "Boeing 737"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "aircraft_id": {
+      "$id": "#/properties/aircraft_id",
+      "type": "integer",
+      "title": "The Aircraft_id Schema",
+      "default": 0,
+      "examples": [
+        28
+      ]
+    },
+    "capacity": {
+      "$id": "#/properties/capacity",
+      "type": "integer",
+      "title": "The Capacity Schema",
+      "default": 0,
+      "examples": [
+        180
+      ]
+    },
+    "range": {
+      "$id": "#/properties/range",
+      "type": "integer",
+      "title": "The Range Schema",
+      "default": 0,
+      "examples": [
+        4000
+      ]
+    },
+    "useful_load": {
+      "$id": "#/properties/useful_load",
+      "type": "integer",
+      "title": "The Useful_load Schema",
+      "default": 0,
+      "examples": [
+        48000
+      ]
+    },
+    "speed": {
+      "$id": "#/properties/speed",
+      "type": "integer",
+      "title": "The Speed Schema",
+      "default": 0,
+      "examples": [
+        300
+      ]
+    },
+    "requested_range": {
+      "$id": "#/properties/requested_range",
+      "type": "integer",
+      "title": "The Requested_range Schema",
+      "default": 0,
+      "examples": [
+        1500
+      ]
+    },
+    "requested_capacity": {
+      "$id": "#/properties/requested_capacity",
+      "type": "integer",
+      "title": "The Requested_capacity Schema",
+      "default": 0,
+      "examples": [
+        50
+      ]
+    },
+    "pilot": {
+      "$id": "#/properties/pilot",
+      "type": "string",
+      "title": "The Pilot Schema",
+      "default": "",
+      "examples": [
+        "Sophie \"Anti-Matter\" Federov"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "pilot_id": {
+      "$id": "#/properties/pilot_id",
+      "type": "integer",
+      "title": "The Pilot_id Schema",
+      "default": 0,
+      "examples": [
+        21
+      ]
+    },
+    "pilot_age": {
+      "$id": "#/properties/pilot_age",
+      "type": "integer",
+      "title": "The Pilot_age Schema",
+      "default": 0,
+      "examples": [
+        34
+      ]
+    },
+    "created": {
+      "$id": "#/properties/created",
+      "type": "string",
+      "title": "The Created Schema",
+      "default": "",
+      "examples": [
+        "2019-05-14T10:25:01+00:00"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "modified": {
+      "$id": "#/properties/modified",
+      "type": "string",
+      "title": "The Modified Schema",
+      "default": "",
+      "examples": [
+        "2019-05-14T10:25:01+00:00"
+      ],
+      "pattern": "^(.*)$"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
 	xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:ws="http://www.mulesoft.org/schema/mule/ws"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
@@ -10,7 +10,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
 	<http:listener-config name="mule-airline-httpListenerConfig"
 		host="0.0.0.0" port="8086" doc:name="HTTP Listener Configuration" />
 	<apikit:config name="mule-airline-config" raml="mule-airline.raml"
@@ -38,22 +39,48 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			doc:name="Java" />
 	</flow>
 	<flow name="delete:/route/{routeID}:mule-airline-config">
-		<set-payload value="Route 1 deleted!" doc:name="Set Payload" />
+
+		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]" doc:name="Payload" />
+        <db:delete config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[DELETE FROM route WHERE id = (:id);]]></db:parameterized-query>
+            <db:in-param name="id" value="#[payload]" />
+        </db:delete>
+        <dw:transform-message doc:name="Transform Message" metadata:id="eef5a22f-dff9-4ff1-9dfa-c8251a2e269e">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+"Route" ++ flowVars.routeID ++ "Deleted"]]></dw:set-payload>
+        </dw:transform-message>
 	</flow>
 	<flow name="get:/route:mule-airline-config">
-		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
-			doc:name="Database">
-			<db:parameterized-query><![CDATA[SELECT * FROM route;]]></db:parameterized-query>
-		</db:select>
+        <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT id, name, requested_range as distance, aircraft_name as aircraft, aircraft_passenger_capacity as capacity, pilot_name as pilot FROM route;]]></db:parameterized-query>
+        </db:select>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <dw:transform-message doc:name="Transform Message" metadata:id="03b7daec-fd3e-4eb5-8a8e-b7cd82b7a560">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+payload map ((payload01 , indexOfPayload01) -> {
+	id: payload01.id,
+	name: payload01.name,
+	distance: payload01.distance,
+	aircraft: payload01.aircraft,
+	capacity: payload01.capacity,
+	pilot: payload01.pilot
+})]]></dw:set-payload>
+        </dw:transform-message>
+
 	</flow>
 	<flow name="get:/route/{routeID}:mule-airline-config">
-		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
-			doc:name="Set Payload" />
-		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
-			doc:name="Database">
-			<db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
+        <set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]" doc:name="Payload"/>
+        <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
 			<db:in-param name="id" value="#[payload]" />
-		</db:select>
+        </db:select>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+
 	</flow>
 	<flow name="post:/route:mule-airline-config">
 		<dw:transform-message doc:name="Set query params to variables">
@@ -72,25 +99,42 @@ inboundProperties.'http.query.params'.name]]></dw:set-variable>
 		</dw:transform-message>
 		<ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft"
 			doc:name="Web Service Consumer" />
+		<logger message="#[message.inboundProperties]" level="INFO"
+			doc:name="Logger" />
 		<dw:transform-message doc:name="Transform Message"
 			metadata:id="64271471-cc4c-4bb3-9968-d3f1ceb2beab">
 			<dw:set-payload><![CDATA[%dw 1.0
-%output application/java
+%output application/json
 %namespace ns0 http://soap.revature.com/
 ---
-payload.ns0#getAllAircraftResponse.*return map {
-	id: $.id as :number,
-	name: $.aircraftName,
-	passenger_capacity: $.numPassengers as :number,
-	range: $.rangeNM as :number,
-	size: $.heightM * $.lengthM * $.wingSpanM,
-	speed: $.maxCruiseSpeedKtas as :number,
-	useful_load: $.usefulLoad as :number
-} orderBy $.useful_load filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)
+payload.ns0#getAllAircraftResponse.*return map ((return , indexOfReturn) -> {
+	id: return.id as :number,
+	name: return.aircraftName,
+	passenger_capacity: return.numPassengers as :number,
+	range: return.rangeNM as :number,
+	size: return.heightM * return.lengthM * return.wingSpanM,
+	speed: return.maxCruiseSpeedKtas as :number,
+	useful_load: return.usefulLoad as :number
+})]]></dw:set-payload>
+		</dw:transform-message>
+		<dw:transform-message doc:name="Transform Message"
+			metadata:id="2284de66-a2f1-48d9-a6ae-4f8e37c8c4eb">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+payload orderBy ($.useful_load)
 ]]></dw:set-payload>
 		</dw:transform-message>
-        <component class="com.revature.project1mule.flightschool.flowHelpers.postHelper" doc:name="Java"/>
-
+		<logger
+			message="\nrequested_passengers: #[flowVars.requested_passengers]\nrequested_range: #[flowVars.requested_range]\nroute_name:#[flowVars.route_name]"
+			level="INFO" doc:name="Logger" />
+		<dw:transform-message doc:name="Transform Message"
+			metadata:id="b621be71-092c-4357-806b-76c865f3fd87">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+payload filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)]]></dw:set-payload>
+		</dw:transform-message>
 
 	</flow>
 	<apikit:mapping-exception-strategy
@@ -140,3 +184,4 @@ payload.ns0#getAllAircraftResponse.*return map {
 		</apikit:mapping>
 	</apikit:mapping-exception-strategy>
 </mule>
+
