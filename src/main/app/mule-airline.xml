@@ -14,15 +14,13 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
 
-	<http:listener-config name="mule-airline-httpListenerConfig"
-		host="0.0.0.0" port="8086" doc:name="HTTP Listener Configuration" />
 	<apikit:config name="mule-airline-config" raml="mule-airline.raml"
 		consoleEnabled="true" doc:name="Router" keepRamlBaseUri="false" />
 	<db:generic-config name="Elephant_SQL_route_Database_Configuration"
 		url="jdbc:postgresql://echo.db.elephantsql.com:5432/fmdwmvhp?user=#[flowVars.elephant_username]&amp;password=#[flowVars.elephant_password]"
 		driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration" />
 	<flow name="mule-airline-main">
-		<http:listener config-ref="mule-airline-httpListenerConfig"
+		<http:listener config-ref="HTTP_Listener_Configuration"
 			path="/api/*" doc:name="HTTP" />
 		<apikit:router config-ref="mule-airline-config"
 			doc:name="APIkit Router" />
@@ -30,17 +28,19 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 			doc:name="Reference Exception Strategy" />
 	</flow>
 	<flow name="mule-airline-console">
-		<http:listener config-ref="mule-airline-httpListenerConfig"
+		<http:listener config-ref="HTTP_Listener_Configuration"
 			path="/console/*" doc:name="HTTP" />
 		<apikit:console config-ref="mule-airline-config"
 			doc:name="APIkit Console" />
 	</flow>
 	<flow name="put:/route/{routeID}:mule-airline-config">
-        <set-payload value="${mule.property.test}" doc:name="Set Payload"/>
+		<set-payload value="${mule.property.test}" doc:name="Set Payload" />
 	</flow>
 	<flow name="delete:/route/{routeID}:mule-airline-config">
-        <set-variable variableName="elephant_password" value="${elephant.password}" doc:name="elephant_password"/>
-        <set-variable variableName="elephant_username" value="${elephant.username}" doc:name="elephant_username"/>
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
 
 		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
 			doc:name="Payload" />
@@ -58,13 +58,15 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 		</dw:transform-message>
 	</flow>
 	<flow name="get:/route:mule-airline-config">
-	
-        <set-variable variableName="elephant_password" value="${elephant.password}" doc:name="elephant_password"/>
-        <set-variable variableName="elephant_username" value="${elephant.username}" doc:name="elephant_username"/>
-        <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT id, name, requested_range as distance, aircraft_name as aircraft, aircraft_passenger_capacity as capacity, pilot_name as pilot FROM route;]]></db:parameterized-query>
-        </db:select>
 
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
+		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
+			doc:name="Database">
+			<db:parameterized-query><![CDATA[SELECT id, name, requested_range as distance, aircraft_name as aircraft, aircraft_passenger_capacity as capacity, pilot_name as pilot FROM route;]]></db:parameterized-query>
+		</db:select>
 		<json:object-to-json-transformer
 			doc:name="Object to JSON" />
 		<dw:transform-message doc:name="Transform Message"
@@ -85,9 +87,11 @@ payload map ((payload01 , indexOfPayload01) -> {
 
 	</flow>
 	<flow name="get:/route/{routeID}:mule-airline-config">
-	
-        <set-variable variableName="elephant_password" value="${elephant.password}" doc:name="elephant_password"/>
-        <set-variable variableName="elephant_username" value="${elephant.username}" doc:name="elephant_username"/>
+
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
 		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
 			doc:name="Payload" />
 		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
