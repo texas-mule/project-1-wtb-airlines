@@ -4,6 +4,7 @@
 # ------------------------------------------------------------------------------ #
 # Reference: https://github.com/github/gitignore/blob/master/Java.gitignore
 *.class
+*.properties
 
 # Package Files #
 *.jar

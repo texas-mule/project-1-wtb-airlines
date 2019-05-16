@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
 	xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:ws="http://www.mulesoft.org/schema/mule/ws"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
@@ -12,12 +13,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+
 	<http:listener-config name="mule-airline-httpListenerConfig"
 		host="0.0.0.0" port="8086" doc:name="HTTP Listener Configuration" />
 	<apikit:config name="mule-airline-config" raml="mule-airline.raml"
 		consoleEnabled="true" doc:name="Router" keepRamlBaseUri="false" />
 	<db:generic-config name="Elephant_SQL_route_Database_Configuration"
-		url="jdbc:postgresql://echo.db.elephantsql.com:5432/fmdwmvhp?user=fmdwmvhp&amp;password=cjYHdQ9o40opLTL-0ZJ4HfA2gdu2N0CD"
+		url="jdbc:postgresql://echo.db.elephantsql.com:5432/fmdwmvhp?user=#[flowVars.elephant_username]&amp;password=#[flowVars.elephant_password]"
 		driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration" />
 	<flow name="mule-airline-main">
 		<http:listener config-ref="mule-airline-httpListenerConfig"
@@ -34,32 +36,41 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 			doc:name="APIkit Console" />
 	</flow>
 	<flow name="put:/route/{routeID}:mule-airline-config">
-		<component
-			class="com.revature.project1mule.flightschool.flowHelpers.TestHelper"
-			doc:name="Java" />
+        <set-payload value="${mule.property.test}" doc:name="Set Payload"/>
 	</flow>
 	<flow name="delete:/route/{routeID}:mule-airline-config">
+        <set-variable variableName="elephant_password" value="${elephant.password}" doc:name="elephant_password"/>
+        <set-variable variableName="elephant_username" value="${elephant.username}" doc:name="elephant_username"/>
 
-		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]" doc:name="Payload" />
-        <db:delete config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[DELETE FROM route WHERE id = (:id);]]></db:parameterized-query>
-            <db:in-param name="id" value="#[payload]" />
-        </db:delete>
-        <dw:transform-message doc:name="Transform Message" metadata:id="eef5a22f-dff9-4ff1-9dfa-c8251a2e269e">
-            <dw:set-payload><![CDATA[%dw 1.0
+		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
+			doc:name="Payload" />
+		<db:delete config-ref="Elephant_SQL_route_Database_Configuration"
+			doc:name="Database">
+			<db:parameterized-query><![CDATA[DELETE FROM route WHERE id = (:id);]]></db:parameterized-query>
+			<db:in-param name="id" value="#[payload]" />
+		</db:delete>
+		<dw:transform-message doc:name="Transform Message"
+			metadata:id="eef5a22f-dff9-4ff1-9dfa-c8251a2e269e">
+			<dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 "Route" ++ flowVars.routeID ++ "Deleted"]]></dw:set-payload>
-        </dw:transform-message>
+		</dw:transform-message>
 	</flow>
 	<flow name="get:/route:mule-airline-config">
+	
+        <set-variable variableName="elephant_password" value="${elephant.password}" doc:name="elephant_password"/>
+        <set-variable variableName="elephant_username" value="${elephant.username}" doc:name="elephant_username"/>
         <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
             <db:parameterized-query><![CDATA[SELECT id, name, requested_range as distance, aircraft_name as aircraft, aircraft_passenger_capacity as capacity, pilot_name as pilot FROM route;]]></db:parameterized-query>
         </db:select>
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
-        <dw:transform-message doc:name="Transform Message" metadata:id="03b7daec-fd3e-4eb5-8a8e-b7cd82b7a560">
-            <dw:input-payload mimeType="application/json"/>
-            <dw:set-payload><![CDATA[%dw 1.0
+
+		<json:object-to-json-transformer
+			doc:name="Object to JSON" />
+		<dw:transform-message doc:name="Transform Message"
+			metadata:id="03b7daec-fd3e-4eb5-8a8e-b7cd82b7a560">
+			<dw:input-payload mimeType="application/json" />
+			<dw:set-payload><![CDATA[%dw 1.0
 %output application/json
 ---
 payload map ((payload01 , indexOfPayload01) -> {
@@ -70,16 +81,22 @@ payload map ((payload01 , indexOfPayload01) -> {
 	capacity: payload01.capacity,
 	pilot: payload01.pilot
 })]]></dw:set-payload>
-        </dw:transform-message>
+		</dw:transform-message>
 
 	</flow>
 	<flow name="get:/route/{routeID}:mule-airline-config">
-        <set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]" doc:name="Payload"/>
-        <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
+	
+        <set-variable variableName="elephant_password" value="${elephant.password}" doc:name="elephant_password"/>
+        <set-variable variableName="elephant_username" value="${elephant.username}" doc:name="elephant_username"/>
+		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
+			doc:name="Payload" />
+		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
+			doc:name="Database">
+			<db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
 			<db:in-param name="id" value="#[payload]" />
-        </db:select>
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
+		</db:select>
+		<json:object-to-json-transformer
+			doc:name="Object to JSON" />
 
 	</flow>
 	<flow name="post:/route:mule-airline-config">
