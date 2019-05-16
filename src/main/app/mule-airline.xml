@@ -15,7 +15,9 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		host="0.0.0.0" port="8086" doc:name="HTTP Listener Configuration" />
 	<apikit:config name="mule-airline-config" raml="mule-airline.raml"
 		consoleEnabled="true" doc:name="Router" keepRamlBaseUri="false" />
-    <db:generic-config name="Elephant_SQL_route_Database_Configuration" url="jdbc:postgresql://echo.db.elephantsql.com:5432/fmdwmvhp?user=fmdwmvhp&amp;password=cjYHdQ9o40opLTL-0ZJ4HfA2gdu2N0CD" driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration"/>
+	<db:generic-config name="Elephant_SQL_route_Database_Configuration"
+		url="jdbc:postgresql://echo.db.elephantsql.com:5432/fmdwmvhp?user=fmdwmvhp&amp;password=cjYHdQ9o40opLTL-0ZJ4HfA2gdu2N0CD"
+		driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration" />
 	<flow name="mule-airline-main">
 		<http:listener config-ref="mule-airline-httpListenerConfig"
 			path="/api/*" doc:name="HTTP" />
@@ -31,26 +33,27 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			doc:name="APIkit Console" />
 	</flow>
 	<flow name="put:/route/{routeID}:mule-airline-config">
-		<set-payload
-			value="{&#xA; &quot;id&quot;: 1,&#xA; &quot;name&quot;: &quot;NY LA daily&quot;,&#xA; &quot;distance&quot;: 4000,&#xA; &quot;aircraft&quot;: &quot;Boeing 737&quot;,&#xA; &quot;aircraft_id&quot;: 28&#xA; &quot;capacity&quot;: 180,&#xA; &quot;range&quot;: 4000,&#xA; &quot;useful_load&quot;: 48000,&#xA; &quot;speed&quot;: 300,&#xA; &quot;requested_range&quot;: 4300,&#xA; &quot;requested_capacity&quot;: 90,&#xA; &quot;pilot&quot;: &quot;Sophie \&quot;Anti-Matter\&quot; Federov&quot;,&#xA; &quot;pilot_id&quot;: 21,&#xA; &quot;pilot_age&quot;: 34,&#xA; &quot;created&quot;: 2019-05-14T10:25:01+00:00,&#xA; &quot;modified&quot;: 2019-05-14T10:25:01+00:00&#xA;}"
-			doc:name="Set Payload" />
+		<component
+			class="com.revature.project1mule.flightschool.flowHelpers.TestHelper"
+			doc:name="Java" />
 	</flow>
 	<flow name="delete:/route/{routeID}:mule-airline-config">
 		<set-payload value="Route 1 deleted!" doc:name="Set Payload" />
 	</flow>
 	<flow name="get:/route:mule-airline-config">
-        <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM route;]]></db:parameterized-query>
-        </db:select>
-
+		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
+			doc:name="Database">
+			<db:parameterized-query><![CDATA[SELECT * FROM route;]]></db:parameterized-query>
+		</db:select>
 	</flow>
 	<flow name="get:/route/{routeID}:mule-airline-config">
-        <set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]" doc:name="Set Payload"/>
-        <db:select config-ref="Elephant_SQL_route_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
-            <db:in-param name="id" value="#[payload]" />
-        </db:select>
-
+		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
+			doc:name="Set Payload" />
+		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
+			doc:name="Database">
+			<db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
+			<db:in-param name="id" value="#[payload]" />
+		</db:select>
 	</flow>
 	<flow name="post:/route:mule-airline-config">
 		<dw:transform-message doc:name="Set query params to variables">
@@ -69,42 +72,25 @@ inboundProperties.'http.query.params'.name]]></dw:set-variable>
 		</dw:transform-message>
 		<ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft"
 			doc:name="Web Service Consumer" />
-		<logger message="#[message.inboundProperties]" level="INFO"
-			doc:name="Logger" />
 		<dw:transform-message doc:name="Transform Message"
 			metadata:id="64271471-cc4c-4bb3-9968-d3f1ceb2beab">
 			<dw:set-payload><![CDATA[%dw 1.0
-%output application/json
+%output application/java
 %namespace ns0 http://soap.revature.com/
 ---
-payload.ns0#getAllAircraftResponse.*return map ((return , indexOfReturn) -> {
-	id: return.id as :number,
-	name: return.aircraftName,
-	passenger_capacity: return.numPassengers as :number,
-	range: return.rangeNM as :number,
-	size: return.heightM * return.lengthM * return.wingSpanM,
-	speed: return.maxCruiseSpeedKtas as :number,
-	useful_load: return.usefulLoad as :number
-})]]></dw:set-payload>
-		</dw:transform-message>
-		<dw:transform-message doc:name="Transform Message"
-			metadata:id="2284de66-a2f1-48d9-a6ae-4f8e37c8c4eb">
-			<dw:set-payload><![CDATA[%dw 1.0
-%output application/json
----
-payload orderBy ($.size)
+payload.ns0#getAllAircraftResponse.*return map {
+	id: $.id as :number,
+	name: $.aircraftName,
+	passenger_capacity: $.numPassengers as :number,
+	range: $.rangeNM as :number,
+	size: $.heightM * $.lengthM * $.wingSpanM,
+	speed: $.maxCruiseSpeedKtas as :number,
+	useful_load: $.usefulLoad as :number
+} orderBy $.useful_load filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)
 ]]></dw:set-payload>
 		</dw:transform-message>
-		<logger
-			message="\nrequested_passengers: #[flowVars.requested_passengers]\nrequested_range: #[flowVars.requested_range]\nroute_name:#[flowVars.route_name]"
-			level="INFO" doc:name="Logger" />
-		<dw:transform-message doc:name="Transform Message"
-			metadata:id="b621be71-092c-4357-806b-76c865f3fd87">
-			<dw:set-payload><![CDATA[%dw 1.0
-%output application/json
----
-payload filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)]]></dw:set-payload>
-		</dw:transform-message>
+        <component class="com.revature.project1mule.flightschool.flowHelpers.postHelper" doc:name="Java"/>
+
 
 	</flow>
 	<apikit:mapping-exception-strategy
