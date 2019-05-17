@@ -14,14 +14,10 @@ public class PutHelper implements Callable {
 
 	@Override
 	public Object onCall(MuleEventContext eventContext) {
-		System.out.println("PutHelper line 17: onCall method.");
 		int route_id = Integer.parseInt(eventContext.getMessage().getInvocationProperty("route_id"));
-		System.out.println(route_id);
 		RouteDao routeDao = RouteDao.getDao();
 		int requested_range = eventContext.getMessage().getInvocationProperty("requested_range");
-		System.out.println(requested_range);
 		int requested_passengers = eventContext.getMessage().getInvocationProperty("requested_passengers");
-		System.out.println(requested_passengers);
 		FlightSchoolAccessor fsa = new FlightSchoolAccessor();
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> lacr = (List<Map<String, Object>>) eventContext.getMessage().getPayload();

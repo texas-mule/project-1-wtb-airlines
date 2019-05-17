@@ -14,11 +14,12 @@ import com.revature.project1mule.flightschool.responsePojos.AircraftSearchResult
 public class FlightSchoolAccessor {
 
 	public List<AircraftPilot> getPilots(String aircraftName) {
-		System.out.println("FlightSchoolAccessor lin 17: getPilots method.");
-		System.out.println(aircraftName);
 		ObjectMapper mapper = new ObjectMapper();
 		String aircraftSearchJSON = httpGetHelper(
-				"https://flightschool.joshquizzes.com/flightschool/api/aircraft?search=" + aircraftName);
+				"https://flightschool.joshquizzes.com/flightschool/api/aircraft?search="
+						+ aircraftName.replaceAll(" ", "%20"));
+		if (aircraftSearchJSON == null)
+			return null;
 		AircraftSearchResult asr;
 		try {
 			asr = mapper.readValue(aircraftSearchJSON, AircraftSearchResult.class);
@@ -40,8 +41,6 @@ public class FlightSchoolAccessor {
 	}
 
 	private String httpGetHelper(String targetUrl) {
-		System.out.println("FlightSchoolAccessor line 39: httpGetHelper method");
-		System.out.println(targetUrl);
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(new URL(targetUrl).openStream()));
 			StringBuilder response = new StringBuilder();
