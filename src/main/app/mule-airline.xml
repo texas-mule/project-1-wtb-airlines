@@ -120,42 +120,26 @@ inboundProperties.'http.query.params'.name]]></dw:set-variable>
 		</dw:transform-message>
 		<ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft"
 			doc:name="Web Service Consumer" />
-		<logger message="#[message.inboundProperties]" level="INFO"
-			doc:name="Logger" />
+
 		<dw:transform-message doc:name="Transform Message"
 			metadata:id="64271471-cc4c-4bb3-9968-d3f1ceb2beab">
 			<dw:set-payload><![CDATA[%dw 1.0
-%output application/json
+%output application/java
 %namespace ns0 http://soap.revature.com/
 ---
-payload.ns0#getAllAircraftResponse.*return map ((return , indexOfReturn) -> {
-	id: return.id as :number,
-	name: return.aircraftName,
-	passenger_capacity: return.numPassengers as :number,
-	range: return.rangeNM as :number,
-	size: return.heightM * return.lengthM * return.wingSpanM,
-	speed: return.maxCruiseSpeedKtas as :number,
-	useful_load: return.usefulLoad as :number
-})]]></dw:set-payload>
-		</dw:transform-message>
-		<dw:transform-message doc:name="Transform Message"
-			metadata:id="2284de66-a2f1-48d9-a6ae-4f8e37c8c4eb">
-			<dw:set-payload><![CDATA[%dw 1.0
-%output application/json
----
-payload orderBy ($.useful_load)
+payload.ns0#getAllAircraftResponse.*return map {
+	id: $.id as :number,
+	name: $.aircraftName,
+	passenger_capacity: $.numPassengers as :number,
+	range: $.rangeNM as :number,
+	size: $.heightM * $.lengthM * $.wingSpanM,
+	speed: $.maxCruiseSpeedKtas as :number,
+	useful_load: $.usefulLoad as :number
+} orderBy ($.useful_load) filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)
 ]]></dw:set-payload>
 		</dw:transform-message>
-		<logger
-			message="\nrequested_passengers: #[flowVars.requested_passengers]\nrequested_range: #[flowVars.requested_range]\nroute_name:#[flowVars.route_name]"
-			level="INFO" doc:name="Logger" />
-		<dw:transform-message doc:name="Transform Message"
-			metadata:id="b621be71-092c-4357-806b-76c865f3fd87">
-			<dw:set-payload><![CDATA[%dw 1.0
-%output application/json
----
-payload filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)]]></dw:set-payload>
-		</dw:transform-message>
+        <component class="com.revature.project1mule.flightschool.flowHelpers.postHelper" doc:name="Java"/>
+
 
 	</flow>
 	<apikit:mapping-exception-strategy
