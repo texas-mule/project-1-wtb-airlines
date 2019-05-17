@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns0:getAllAircraftResponse xmlns:ns0="http://soap.revature.com/">
+  <return/>
+</ns0:getAllAircraftResponse>
