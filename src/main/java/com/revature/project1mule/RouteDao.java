@@ -56,7 +56,7 @@ public class RouteDao {
 		return conn;
 	}
 
-	public String insert(int rr, Object ai, Object aul, Object ar, Integer pi, Object as, int pa, String pn, Object an,
+	public boolean insert(int rr, Object ai, Object aul, Object ar, Integer pi, Object as, int pa, String pn, Object an,
 			Object apc, int rp, String rn) {
 		String sql = "INSERT INTO route (requested_range, aircraft_id, aircraft_useful_load, "
 				+ "aircraft_range, pilot_id, aircraft_speed, pilot_age, pilot_name, "
@@ -79,8 +79,9 @@ public class RouteDao {
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
-		return "Route " + rn + " Added to Routes";
+		return true;
 	}
 
 	public String update(int rr, Object ai, Object aul, Object ar, Integer pi, Object as, int pa, String pn, Object an,

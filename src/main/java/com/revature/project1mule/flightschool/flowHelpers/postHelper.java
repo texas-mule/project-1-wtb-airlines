@@ -26,17 +26,21 @@ public class postHelper implements Callable {
 			if (pilots == null)
 				continue;
 			for (AircraftPilot pilot : pilots) {
-				if (pilot == null)
+				if (pilot == null || pilot.getId() == null)
 					continue;
 				if (routeDao.pilotAssigned(pilot.getId()))
 					continue;
-				routeDao.insert(requested_range, acr.get("id"), acr.get("useful_load"), acr.get("range"), pilot.getId(),
-						acr.get("speed"), pilot.getAge(), pilot.getName(), acr.get("name"),
-						acr.get("passenger_capacity"), requested_passengers, route_name);
-				return routeDao.getRouteByName(route_name);
+				if (routeDao.insert(requested_range, acr.get("id"), acr.get("useful_load"), acr.get("range"),
+						pilot.getId(), acr.get("speed"), pilot.getAge(), pilot.getName(), acr.get("name"),
+						acr.get("passenger_capacity"), requested_passengers, route_name)) {
+					return routeDao.getRouteByName(route_name);
+				} else {
+					return "That route name is taken!";
+				}
 			}
+			return "No pilots available!";
 		}
-		return lacr;
+		return "No suitable aircraft available!";
 	}
 
 }
