@@ -84,10 +84,10 @@ public class RouteDao {
 	}
 
 	public String update(int rr, Object ai, Object aul, Object ar, Integer pi, Object as, int pa, String pn, Object an,
-			Object apc, int rp, String rn) {
+			Object apc, int rp, int r_id) {
 		String sql = "UPDATE route SET requested_range = ?, aircraft_id = ?, aircraft_useful_load = ?, "
 				+ "aircraft_range = ?, pilot_id = ?, aircraft_speed = ?, pilot_age = ?, pilot_name = ?, "
-				+ "aircraft_name = ?, aircraft_passenger_capacity = ?, requested_passengers = ? " + "WHERE name = ?";
+				+ "aircraft_name = ?, aircraft_passenger_capacity = ?, requested_passengers = ? " + "WHERE id = ?";
 		Connection conn = getConnection();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, rr);
@@ -101,12 +101,12 @@ public class RouteDao {
 			pstmt.setString(9, (String) an);
 			pstmt.setInt(10, (Integer) apc);
 			pstmt.setInt(11, (Integer) rp);
-			pstmt.setString(12, rn);
+			pstmt.setInt(12, r_id);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return "Route " + rn + " Updated";
+		return "Route " + r_id + " Updated";
 	}
 
 	public boolean pilotAssigned(int pi) {
@@ -133,7 +133,26 @@ public class RouteDao {
 							rs.getInt("aircraft_speed"), rs.getInt("pilot_age"), rs.getString("pilot_name"),
 							rs.getString("aircraft_name"), rs.getInt("aircraft_passenger_capacity"),
 							rs.getInt("requested_passengers"), rs.getString("name"), rs.getInt("id"),
-							rs.getDate("created"), rs.getDate("modified"));
+							rs.getDate("created_date"), rs.getDate("modified_date"));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public Route getRouteById(int route_id) {
+		try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM route WHERE id = ?;")) {
+			ps.setInt(1, route_id);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return new Route(rs.getInt("requested_range"), rs.getInt("aircraft_id"),
+							rs.getInt("aircraft_useful_load"), rs.getInt("aircraft_range"), rs.getInt("pilot_id"),
+							rs.getInt("aircraft_speed"), rs.getInt("pilot_age"), rs.getString("pilot_name"),
+							rs.getString("aircraft_name"), rs.getInt("aircraft_passenger_capacity"),
+							rs.getInt("requested_passengers"), rs.getString("name"), rs.getInt("id"),
+							rs.getDate("created_date"), rs.getDate("modified_date"));
 				}
 			}
 		} catch (Exception e) {

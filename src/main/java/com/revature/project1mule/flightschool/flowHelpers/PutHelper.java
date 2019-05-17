@@ -10,14 +10,18 @@ import com.revature.project1mule.flightschool.responsePojos.AircraftPilot;
 import com.revature.project1mule.FlightSchoolAccessor;
 import com.revature.project1mule.RouteDao;
 
-public class postHelper implements Callable {
+public class PutHelper implements Callable {
 
 	@Override
 	public Object onCall(MuleEventContext eventContext) {
-		int requested_range = eventContext.getMessage().getInvocationProperty("requested_range");
-		int requested_passengers = eventContext.getMessage().getInvocationProperty("requested_passengers");
-		String route_name = eventContext.getMessage().getInvocationProperty("route_name");
+		System.out.println("PutHelper line 17: onCall method.");
+		int route_id = Integer.parseInt(eventContext.getMessage().getInvocationProperty("route_id"));
+		System.out.println(route_id);
 		RouteDao routeDao = RouteDao.getDao();
+		int requested_range = eventContext.getMessage().getInvocationProperty("requested_range");
+		System.out.println(requested_range);
+		int requested_passengers = eventContext.getMessage().getInvocationProperty("requested_passengers");
+		System.out.println(requested_passengers);
 		FlightSchoolAccessor fsa = new FlightSchoolAccessor();
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> lacr = (List<Map<String, Object>>) eventContext.getMessage().getPayload();
@@ -28,10 +32,10 @@ public class postHelper implements Callable {
 			for (AircraftPilot pilot : pilots) {
 				if (routeDao.pilotAssigned(pilot.getId()))
 					continue;
-				routeDao.insert(requested_range, acr.get("id"), acr.get("useful_load"), acr.get("range"), pilot.getId(),
+				routeDao.update(requested_range, acr.get("id"), acr.get("useful_load"), acr.get("range"), pilot.getId(),
 						acr.get("speed"), pilot.getAge(), pilot.getName(), acr.get("name"),
-						acr.get("passenger_capacity"), requested_passengers, route_name);
-				return routeDao.getRouteByName(route_name);
+						acr.get("passenger_capacity"), requested_passengers, route_id);
+				return routeDao.getRouteById(route_id);
 			}
 		}
 		return lacr;

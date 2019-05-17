@@ -34,7 +34,40 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 			doc:name="APIkit Console" />
 	</flow>
 	<flow name="put:/route/{routeID}:mule-airline-config">
-		<set-payload value="${mule.property.test}" doc:name="Set Payload" />
+				<dw:transform-message doc:name="Set query params to variables">
+			<dw:set-variable variableName="requested_range"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.r as :number default 0]]></dw:set-variable>
+			<dw:set-variable variableName="requested_passengers"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.p as :number default 0]]></dw:set-variable>
+			<dw:set-variable variableName="route_id"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.uri.params'.routeID]]></dw:set-variable>
+		</dw:transform-message>
+		<ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft"
+			doc:name="Web Service Consumer" />
+		<dw:transform-message doc:name="Transform Message"
+			metadata:id="64271471-cc4c-4bb3-9968-d3f1ceb2beab">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+%namespace ns0 http://soap.revature.com/
+---
+payload.ns0#getAllAircraftResponse.*return map {
+	id: $.id as :number,
+	name: $.aircraftName,
+	passenger_capacity: $.numPassengers as :number,
+	range: $.rangeNM as :number,
+	size: $.heightM * $.lengthM * $.wingSpanM,
+	speed: $.maxCruiseSpeedKtas as :number,
+	useful_load: $.usefulLoad as :number
+} orderBy ($.useful_load) filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)
+]]></dw:set-payload>
+		</dw:transform-message>
+        <component class="com.revature.project1mule.flightschool.flowHelpers.PutHelper" doc:name="Java"/>
 	</flow>
 	<flow name="delete:/route/{routeID}:mule-airline-config">
 		<set-variable variableName="elephant_password" value="${elephant.password}"
@@ -139,8 +172,6 @@ payload.ns0#getAllAircraftResponse.*return map {
 ]]></dw:set-payload>
 		</dw:transform-message>
         <component class="com.revature.project1mule.flightschool.flowHelpers.postHelper" doc:name="Java"/>
-
-
 	</flow>
 	<apikit:mapping-exception-strategy
 		name="mule-airline-apiKitGlobalExceptionMapping">
