@@ -50,7 +50,6 @@ public class FlightSchoolAccessor {
 				response.append("\n");
 			}
 			rd.close();
-			System.out.println(response.toString());
 			return response.toString();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -26,6 +26,8 @@ public class postHelper implements Callable {
 			if (pilots == null)
 				continue;
 			for (AircraftPilot pilot : pilots) {
+				if (pilot == null)
+					continue;
 				if (routeDao.pilotAssigned(pilot.getId()))
 					continue;
 				routeDao.insert(requested_range, acr.get("id"), acr.get("useful_load"), acr.get("range"), pilot.getId(),
