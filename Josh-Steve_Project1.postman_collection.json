@@ -1,0 +1,414 @@
+{
+	"info": {
+		"_postman_id": "919c26f4-afb4-42b1-9ca4-67ce054ea5fd",
+		"name": "Josh/Steve_Project1",
+		"description": "Calls for Project1 Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8081/aircraft/all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"all"
+					]
+				},
+				"description": "GetAllAircraft"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/manufacturers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/manufacturers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"manufacturers"
+					]
+				},
+				"description": "GetAircraftManufacturers"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/Cessna",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/Cessna",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"Cessna"
+					]
+				},
+				"description": "GetManufacturer{Cessna}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/Cessna/all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/Cessna/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"Cessna",
+						"all"
+					]
+				},
+				"description": "GetAircraftByManufacturer{Cessna}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/Cessna/Skylane",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/Cessna/Skylane",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"Cessna",
+						"Skylane"
+					]
+				},
+				"description": "GetAircraft{Cessna}/{Skylane}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/Cessna",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/Cessna",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"Cessna"
+					]
+				},
+				"description": "getManufacturer{Cessna}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/fs/pilot/Wolf",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/fs/pilot/Wolf",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"fs",
+						"pilot",
+						"Wolf"
+					]
+				},
+				"description": "GetPilot{Wolf}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/fs/aircraft/737",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/fs/aircraft/737",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"fs",
+						"aircraft",
+						"737"
+					]
+				},
+				"description": "getFSAircraft{737}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/fs/aircraft/737/details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/fs/aircraft/737/details",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"fs",
+						"aircraft",
+						"737",
+						"details"
+					]
+				},
+				"description": "getPilotsCertifiedToFly{737}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/fs/pilot/Wolf/details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/fs/pilot/Wolf/details",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"fs",
+						"pilot",
+						"Wolf",
+						"details"
+					]
+				},
+				"description": "getAircraftPilot{Wolf} (is certified to fly)"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/fs/certification/jet",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/fs/certification/jet",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"fs",
+						"certification",
+						"jet"
+					]
+				},
+				"description": "getCertificationsFor{jet} class of aircraft"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/fs/certification/jet/details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/fs/certification/jet/details",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"fs",
+						"certification",
+						"jet",
+						"details"
+					]
+				},
+				"description": "getPilotDetailsCertified{jet} classOfAircraft"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/api/route/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/api/route/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"api",
+						"route",
+						""
+					]
+				},
+				"description": "GetAllRoutes"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/api/route/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/api/route/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"api",
+						"route",
+						"1"
+					]
+				},
+				"description": "getRoute{1}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/api/route/1",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/api/route/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"api",
+						"route",
+						"1"
+					]
+				},
+				"description": "deleteRoute{1}"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/api/route/MyRoute?r=2000&p=200",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/api/route/MyRoute?r=2000&p=200",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"api",
+						"route",
+						"MyRoute"
+					],
+					"query": [
+						{
+							"key": "r",
+							"value": "2000"
+						},
+						{
+							"key": "p",
+							"value": "200"
+						}
+					]
+				},
+				"description": "PostNewRoute(MyRoute, r=2000, p=200)"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircraft/api/route/MyRoute?r=2000&p=100",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/aircraft/api/route/MyRoute?r=2000&p=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"aircraft",
+						"api",
+						"route",
+						"MyRoute"
+					],
+					"query": [
+						{
+							"key": "r",
+							"value": "2000"
+						},
+						{
+							"key": "p",
+							"value": "100"
+						}
+					]
+				},
+				"description": "Put(MyRoute, r=2000, p=100)"
+			},
+			"response": []
+		}
+	]
+}
