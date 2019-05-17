@@ -34,9 +34,9 @@ public class RouteDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		url = props.getProperty("url");
-		username = props.getProperty("username");
-		password = props.getProperty("password");
+		url = props.getProperty("elephant.url");
+		username = props.getProperty("elephant.username");
+		password = props.getProperty("elephant.password");
 	}
 	
 	public static Connection getConnection() {
