@@ -14,9 +14,16 @@ public class postHelper implements Callable {
 
 	@Override
 	public Object onCall(MuleEventContext eventContext) {
-		int requested_range = eventContext.getMessage().getInvocationProperty("requested_range");
-		int requested_passengers = eventContext.getMessage().getInvocationProperty("requested_passengers");
-		String route_name = eventContext.getMessage().getInvocationProperty("route_name");
+		int requested_range, requested_passengers;
+		String route_name;
+		try {
+			requested_range = eventContext.getMessage().getInvocationProperty("requested_range");
+			requested_passengers = eventContext.getMessage().getInvocationProperty("requested_passengers");
+			route_name = eventContext.getMessage().getInvocationProperty("route_name");
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+			return "Invalid query parameter!";
+		}
 		RouteDao routeDao = RouteDao.getDao();
 		FlightSchoolAccessor fsa = new FlightSchoolAccessor();
 		@SuppressWarnings("unchecked")

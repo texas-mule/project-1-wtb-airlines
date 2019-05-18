@@ -35,11 +35,7 @@ public class RouteDao {
 
 	public boolean insert(int rr, Object ai, Object aul, Object ar, Integer pi, Object as, int pa, String pn, Object an,
 			Object apc, int rp, String rn) {
-		String sql = "INSERT INTO route (requested_range, aircraft_id, aircraft_useful_load, "
-				+ "aircraft_range, pilot_id, aircraft_speed, pilot_age, pilot_name, "
-				+ "aircraft_name, aircraft_passenger_capacity, requested_passengers, name) "
-				+ "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO route (requested_range, aircraft_id, aircraft_useful_load, aircraft_range, pilot_id, aircraft_speed, pilot_age, pilot_name, aircraft_name, aircraft_passenger_capacity, requested_passengers, name) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")) {
 			pstmt.setInt(1, rr);
 			pstmt.setInt(2, (Integer) ai);
 			pstmt.setInt(3, (Integer) aul);
@@ -62,10 +58,7 @@ public class RouteDao {
 
 	public String update(int rr, Object ai, Object aul, Object ar, Integer pi, Object as, int pa, String pn, Object an,
 			Object apc, int rp, int r_id) {
-		String sql = "UPDATE route SET requested_range = ?, aircraft_id = ?, aircraft_useful_load = ?, "
-				+ "aircraft_range = ?, pilot_id = ?, aircraft_speed = ?, pilot_age = ?, pilot_name = ?, "
-				+ "aircraft_name = ?, aircraft_passenger_capacity = ?, requested_passengers = ? " + "WHERE id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = conn.prepareStatement("UPDATE route SET requested_range = ?, aircraft_id = ?, aircraft_useful_load = ?, aircraft_range = ?, pilot_id = ?, aircraft_speed = ?, pilot_age = ?, pilot_name = ?, aircraft_name = ?, aircraft_passenger_capacity = ?, requested_passengers = ? " + "WHERE id = ?")) {
 			pstmt.setInt(1, rr);
 			pstmt.setInt(2, (Integer) ai);
 			pstmt.setInt(3, (Integer) aul);
@@ -86,8 +79,7 @@ public class RouteDao {
 	}
 
 	public boolean pilotAssigned(int pi) {
-		String sql = "SELECT pilot_id FROM route WHERE pilot_id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = conn.prepareStatement("SELECT pilot_id FROM route WHERE pilot_id = ?")) {
 			pstmt.setInt(1, pi);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next())
