@@ -36,7 +36,7 @@ baseUri: localhost:8083/api
     type: string
     description: The unique name that identifies the route
     example: NY LA daily
-    required: true
+    required: false
    r:
     displayName: Range
     type: number
@@ -48,6 +48,18 @@ baseUri: localhost:8083/api
     type: number
     description: The minimum required passenger capacity that an aircraft will need to be used on this route.
     example: 50
+    required: false
+   a:
+    displayName: Point A
+    type: string
+    description: The location that this route departs from.
+    example: Hartsfield%20Jackson%20International%20Airport
+    required: false
+   b:
+    displayName: Point B
+    type: string
+    description: The location that this route arrives at.
+    example: Los%20Angeles%20International%20Airport
     required: false
   responses:
    200:

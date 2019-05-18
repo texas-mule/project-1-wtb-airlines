@@ -144,6 +144,7 @@ payload map ((payload01 , indexOfPayload01) -> {
 
 	</flow>
 	<flow name="post:/route:mule-airline-config">
+        <set-variable variableName="opencage_apikey" value="${opencage.apikey}" doc:name="opencage_apikey"/>
 		<set-variable variableName="elephant_password" value="${elephant.password}"
 			doc:name="elephant_password" />
 		<set-variable variableName="elephant_username" value="${elephant.username}"
@@ -162,7 +163,15 @@ inboundProperties.'http.query.params'.p as :number default 0]]></dw:set-variable
 			<dw:set-variable variableName="route_name"><![CDATA[%dw 1.0
 %output application/java
 ---
-inboundProperties.'http.query.params'.name]]></dw:set-variable>
+inboundProperties.'http.query.params'.name as :string default ""]]></dw:set-variable>
+            <dw:set-variable variableName="point_a"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.a as :string default ""]]></dw:set-variable>
+            <dw:set-variable variableName="point_b"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.b as :string default ""]]></dw:set-variable>
 		</dw:transform-message>
 		<ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft"
 			doc:name="Web Service Consumer" />
