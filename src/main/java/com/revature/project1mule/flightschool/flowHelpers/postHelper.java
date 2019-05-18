@@ -24,7 +24,9 @@ public class postHelper implements Callable {
 			e.printStackTrace();
 			return "Invalid query parameter!";
 		}
-		RouteDao routeDao = RouteDao.getDao();
+		RouteDao routeDao = RouteDao.getDao(eventContext.getMessage().getInvocationProperty("elephant_url"),
+				eventContext.getMessage().getInvocationProperty("elephant_username"),
+				eventContext.getMessage().getInvocationProperty("elephant_password"));
 		FlightSchoolAccessor fsa = new FlightSchoolAccessor();
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> lacr = (List<Map<String, Object>>) eventContext.getMessage().getPayload();

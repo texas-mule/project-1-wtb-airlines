@@ -15,7 +15,9 @@ public class PutHelper implements Callable {
 	@Override
 	public Object onCall(MuleEventContext eventContext) {
 		int route_id = Integer.parseInt(eventContext.getMessage().getInvocationProperty("route_id"));
-		RouteDao routeDao = RouteDao.getDao();
+		RouteDao routeDao = RouteDao.getDao(eventContext.getMessage().getInvocationProperty("elephant_url"),
+				eventContext.getMessage().getInvocationProperty("elephant_username"),
+				eventContext.getMessage().getInvocationProperty("elephant_password"));
 		int requested_range = eventContext.getMessage().getInvocationProperty("requested_range");
 		int requested_passengers = eventContext.getMessage().getInvocationProperty("requested_passengers");
 		FlightSchoolAccessor fsa = new FlightSchoolAccessor();

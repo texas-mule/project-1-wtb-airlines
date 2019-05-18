@@ -1,12 +1,10 @@
 package com.revature.project1mule;
 
-import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import com.revature.project1mule.flightschool.responsePojos.Route;
 
@@ -15,19 +13,16 @@ public class RouteDao {
 	private static RouteDao uniqueInstance;
 	private Connection conn;
 
-	public static RouteDao getDao() {
+	public static RouteDao getDao(String url, String username, String password) {
 		if (uniqueInstance == null)
-			uniqueInstance = new RouteDao();
+			uniqueInstance = new RouteDao(url, username, password);
 		return uniqueInstance;
 	}
 
-	private RouteDao() {
-		Properties props = new Properties();
+	private RouteDao(String url, String username, String password) {
 		try {
-			props.load(new FileInputStream("src/main/resources/config.properties"));
 			Class.forName("org.postgresql.Driver");
-			conn = DriverManager.getConnection(props.getProperty("elephant.url"),
-					props.getProperty("elephant.username"), props.getProperty("elephant.password"));
+			conn = DriverManager.getConnection(url, username, password);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -35,7 +30,8 @@ public class RouteDao {
 
 	public boolean insert(int rr, Object ai, Object aul, Object ar, Integer pi, Object as, int pa, String pn, Object an,
 			Object apc, int rp, String rn) {
-		try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO route (requested_range, aircraft_id, aircraft_useful_load, aircraft_range, pilot_id, aircraft_speed, pilot_age, pilot_name, aircraft_name, aircraft_passenger_capacity, requested_passengers, name) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")) {
+		try (PreparedStatement pstmt = conn.prepareStatement(
+				"INSERT INTO route (requested_range, aircraft_id, aircraft_useful_load, aircraft_range, pilot_id, aircraft_speed, pilot_age, pilot_name, aircraft_name, aircraft_passenger_capacity, requested_passengers, name) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")) {
 			pstmt.setInt(1, rr);
 			pstmt.setInt(2, (Integer) ai);
 			pstmt.setInt(3, (Integer) aul);
@@ -58,7 +54,9 @@ public class RouteDao {
 
 	public String update(int rr, Object ai, Object aul, Object ar, Integer pi, Object as, int pa, String pn, Object an,
 			Object apc, int rp, int r_id) {
-		try (PreparedStatement pstmt = conn.prepareStatement("UPDATE route SET requested_range = ?, aircraft_id = ?, aircraft_useful_load = ?, aircraft_range = ?, pilot_id = ?, aircraft_speed = ?, pilot_age = ?, pilot_name = ?, aircraft_name = ?, aircraft_passenger_capacity = ?, requested_passengers = ? " + "WHERE id = ?")) {
+		try (PreparedStatement pstmt = conn.prepareStatement(
+				"UPDATE route SET requested_range = ?, aircraft_id = ?, aircraft_useful_load = ?, aircraft_range = ?, pilot_id = ?, aircraft_speed = ?, pilot_age = ?, pilot_name = ?, aircraft_name = ?, aircraft_passenger_capacity = ?, requested_passengers = ? "
+						+ "WHERE id = ?")) {
 			pstmt.setInt(1, rr);
 			pstmt.setInt(2, (Integer) ai);
 			pstmt.setInt(3, (Integer) aul);

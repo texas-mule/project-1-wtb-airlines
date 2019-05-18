@@ -34,7 +34,13 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 			doc:name="APIkit Console" />
 	</flow>
 	<flow name="put:/route/{routeID}:mule-airline-config">
-				<dw:transform-message doc:name="Set query params to variables">
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
+		<set-variable variableName="elephant_url" value="${elephant.url}"
+			doc:name="elephant_url" />
+		<dw:transform-message doc:name="Set query params to variables">
 			<dw:set-variable variableName="requested_range"><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -67,14 +73,15 @@ payload.ns0#getAllAircraftResponse.*return map {
 } orderBy ($.useful_load) filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)
 ]]></dw:set-payload>
 		</dw:transform-message>
-        <component class="com.revature.project1mule.flightschool.flowHelpers.PutHelper" doc:name="Java"/>
+		<component
+			class="com.revature.project1mule.flightschool.flowHelpers.PutHelper"
+			doc:name="Java" />
 	</flow>
 	<flow name="delete:/route/{routeID}:mule-airline-config">
 		<set-variable variableName="elephant_password" value="${elephant.password}"
 			doc:name="elephant_password" />
 		<set-variable variableName="elephant_username" value="${elephant.username}"
 			doc:name="elephant_username" />
-
 		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
 			doc:name="Payload" />
 		<db:delete config-ref="Elephant_SQL_route_Database_Configuration"
@@ -137,6 +144,12 @@ payload map ((payload01 , indexOfPayload01) -> {
 
 	</flow>
 	<flow name="post:/route:mule-airline-config">
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
+		<set-variable variableName="elephant_url" value="${elephant.url}"
+			doc:name="elephant_url" />
 		<dw:transform-message doc:name="Set query params to variables">
 			<dw:set-variable variableName="requested_range"><![CDATA[%dw 1.0
 %output application/java
@@ -153,7 +166,6 @@ inboundProperties.'http.query.params'.name]]></dw:set-variable>
 		</dw:transform-message>
 		<ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft"
 			doc:name="Web Service Consumer" />
-
 		<dw:transform-message doc:name="Transform Message"
 			metadata:id="64271471-cc4c-4bb3-9968-d3f1ceb2beab">
 			<dw:set-payload><![CDATA[%dw 1.0
@@ -171,7 +183,9 @@ payload.ns0#getAllAircraftResponse.*return map {
 } orderBy ($.useful_load) filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)
 ]]></dw:set-payload>
 		</dw:transform-message>
-        <component class="com.revature.project1mule.flightschool.flowHelpers.postHelper" doc:name="Java"/>
+		<component
+			class="com.revature.project1mule.flightschool.flowHelpers.postHelper"
+			doc:name="Java" />
 	</flow>
 	<apikit:mapping-exception-strategy
 		name="mule-airline-apiKitGlobalExceptionMapping">
