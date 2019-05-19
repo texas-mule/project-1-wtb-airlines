@@ -1,0 +1,177 @@
+#%RAML 1.0
+---
+title: Route API
+baseUri: localhost:8083/api
+/route:
+ get:
+  description: Get all routes summarized
+  responses:
+   200:
+    body:
+     application/json:
+      example: |
+       [
+        {
+         "id": 1,
+         "name": "NY LA daily",
+         "distance": 4000,
+         "aircraft": "Boeing 737",
+         "capacity": 180,
+         "pilot": "Sophie \"Anti-Matter\" Federov"
+        },
+        {
+         "id": 2,
+         "name": "Honolulu Seattle weekly",
+         "distance": 5000,
+         "aircraft": "Airbus A330",
+         "capacity": 240,
+         "pilot": "Pete \"Tyrant\" Washington"
+        }
+       ]
+ post:
+  description: Create a new route
+  queryParameters:
+   name: 
+    displayName: Route Name
+    type: string
+    description: The unique name that identifies the route
+    example: NY LA daily
+    required: false
+   r:
+    displayName: Range
+    type: number
+    description: The minimum required range that an aircraft will need to be used on this route.
+    example: 1500
+    required: false
+   p:
+    displayName: Passengers
+    type: number
+    description: The minimum required passenger capacity that an aircraft will need to be used on this route.
+    example: 50
+    required: false
+   a:
+    displayName: Point A
+    type: string
+    description: The location that this route departs from.
+    example: Hartsfield%20Jackson%20International%20Airport
+    required: false
+   b:
+    displayName: Point B
+    type: string
+    description: The location that this route arrives at.
+    example: Los%20Angeles%20International%20Airport
+    required: false
+  responses:
+   200:
+    body:
+     application/json:
+      example: |
+       {
+        "id": 1,
+        "name": "NY LA daily",
+        "distance": 4000,
+        "aircraft": "Boeing 737",
+        "aircraft_id": 28,
+        "capacity": 180,
+        "range": 4000,
+        "useful_load": 48000,
+        "speed": 300,
+        "requested_range": 1500,
+        "requested_capacity": 50,
+        "pilot": "Sophie \"Anti-Matter\" Federov",
+        "pilot_id": 21,
+        "pilot_age": 34,
+        "created": "2019-05-14T10:25:01+00:00",
+        "modified": "2019-05-14T10:25:01+00:00"
+       }
+   400:
+    body:
+     text/plain:
+      example: No suitable aircraft available!
+ /{routeID}:
+  get:
+   description: Get details on the route that corresponds to the routeID
+   responses:
+    200:
+     body:
+      application/json:
+       example: |
+        {
+         "id": 1,
+         "name": "NY LA daily",
+         "distance": 4000,
+         "aircraft": "Boeing 737",
+         "aircraft_id": 28
+         "capacity": 180,
+         "range": 4000,
+         "useful_load": 48000,
+         "speed": 300,
+         "requested_range": 4300,
+         "requested_capacity": 90,
+         "pilot": "Sophie \"Anti-Matter\" Federov",
+         "pilot_id": 21,
+         "pilot_age": 34,
+         "created": 2019-05-14T10:25:01+00:00,
+         "modified": 2019-05-14T10:25:01+00:00
+        }
+    404:
+     body:
+      text/plain:
+       example: Route 1 does not exist!
+  put:
+   description: Request a modification to the route
+   queryParameters:
+    r:
+     displayName: Range
+     type: number
+     description: The minimum required range that an aircraft will need to be used on this route.
+     example: 1500
+     required: false
+    p:
+     displayName: Passengers
+     type: number
+     description: The minimum required passenger capacity that an aircraft will nedd to be used on this route.
+     example: 50
+     required: false
+   responses:
+    200:
+     body:
+      application/json:
+       example: |
+        {
+         "id": 1,
+         "name": "NY LA daily",
+         "distance": 4000,
+         "aircraft": "Boeing 737",
+         "aircraft_id": 28
+         "capacity": 180,
+         "range": 4000,
+         "useful_load": 48000,
+         "speed": 300,
+         "requested_range": 4300,
+         "requested_capacity": 90,
+         "pilot": "Sophie \"Anti-Matter\" Federov",
+         "pilot_id": 21,
+         "pilot_age": 34,
+         "created": 2019-05-14T10:25:01+00:00,
+         "modified": 2019-05-14T10:25:01+00:00
+        }
+    404:
+     body:
+      text/plain:
+       example: Route 1 does not exist!
+    400:
+     body:
+      text/plain:
+       example: No suitable aircraft available!
+  delete:
+   description: Delete the route
+   responses:
+    200:
+     body:
+      text/plain:
+       example: Route 1 deleted!
+    404:
+     body:
+      text/plain:
+       example: Route 1 does not exist!

@@ -107,23 +107,7 @@ payload.ns0#getAllAircraftResponse.*return map {
 			doc:name="Database">
 			<db:parameterized-query><![CDATA[SELECT id, name, requested_range as distance, aircraft_name as aircraft, aircraft_passenger_capacity as capacity, pilot_name as pilot FROM route;]]></db:parameterized-query>
 		</db:select>
-		<json:object-to-json-transformer
-			doc:name="Object to JSON" />
-		<dw:transform-message doc:name="Transform Message"
-			metadata:id="03b7daec-fd3e-4eb5-8a8e-b7cd82b7a560">
-			<dw:input-payload mimeType="application/json" />
-			<dw:set-payload><![CDATA[%dw 1.0
-%output application/json
----
-payload map ((payload01 , indexOfPayload01) -> {
-	id: payload01.id,
-	name: payload01.name,
-	distance: payload01.distance,
-	aircraft: payload01.aircraft,
-	capacity: payload01.capacity,
-	pilot: payload01.pilot
-})]]></dw:set-payload>
-		</dw:transform-message>
+
 
 	</flow>
 	<flow name="get:/route/{routeID}:mule-airline-config">
@@ -139,8 +123,7 @@ payload map ((payload01 , indexOfPayload01) -> {
 			<db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
 			<db:in-param name="id" value="#[payload]" />
 		</db:select>
-		<json:object-to-json-transformer
-			doc:name="Object to JSON" />
+
 
 	</flow>
 	<flow name="post:/route:mule-airline-config">

@@ -12,6 +12,15 @@
     <buildCommand>
       <name>org.mule.tooling.maven.mavenBuilder</name>
     </buildCommand>
+    <buildCommand>
+      <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+      <arguments>
+        <dictionary>
+          <key>LaunchConfigHandle</key>
+          <value>&lt;project&gt;/.externalToolBuilders/Maven_Ant_Builder.launch</value>
+        </dictionary>
+      </arguments>
+    </buildCommand>
   </buildSpec>
   <natures>
     <nature>org.mule.tooling.maven.mavenNature</nature>
