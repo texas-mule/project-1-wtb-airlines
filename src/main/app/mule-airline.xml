@@ -65,6 +65,7 @@ inboundProperties.'http.uri.params'.routeID]]></dw:set-variable>
 payload.ns0#getAllAircraftResponse.*return map {
 	id: $.id as :number,
 	name: $.aircraftName,
+	manufacturer: $.manufacturer,
 	passenger_capacity: $.numPassengers as :number,
 	range: $.rangeNM as :number,
 	size: $.heightM * $.lengthM * $.wingSpanM,
@@ -94,7 +95,7 @@ payload.ns0#getAllAircraftResponse.*return map {
 			<dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
-"Route" ++ flowVars.routeID ++ "Deleted"]]></dw:set-payload>
+"Route " ++ flowVars.routeID ++ " Deleted"]]></dw:set-payload>
 		</dw:transform-message>
 	</flow>
 	<flow name="get:/route:mule-airline-config">
@@ -167,6 +168,7 @@ inboundProperties.'http.query.params'.b as :string default ""]]></dw:set-variabl
 payload.ns0#getAllAircraftResponse.*return map {
 	id: $.id as :number,
 	name: $.aircraftName,
+	manufacturer: $.manufacturer,
 	passenger_capacity: $.numPassengers as :number,
 	range: $.rangeNM as :number,
 	size: $.heightM * $.lengthM * $.wingSpanM,

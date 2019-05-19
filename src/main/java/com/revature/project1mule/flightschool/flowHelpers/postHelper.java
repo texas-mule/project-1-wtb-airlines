@@ -17,16 +17,12 @@ public class postHelper implements Callable {
 	public Object onCall(MuleEventContext eventContext) {
 		int requested_range, requested_passengers;
 		String route_name, point_a, point_b;
-		System.out.println("onCall:  ...  ...");
 		try {
 			requested_range = eventContext.getMessage().getInvocationProperty("requested_range");
 			requested_passengers = eventContext.getMessage().getInvocationProperty("requested_passengers");
 			route_name = eventContext.getMessage().getInvocationProperty("route_name");
 			point_a = eventContext.getMessage().getInvocationProperty("point_a");
 			point_b = eventContext.getMessage().getInvocationProperty("point_b");
-			System.out.println(route_name);
-			System.out.println(point_a);
-			System.out.println(point_b);
 		} catch (ClassCastException e) {
 			e.printStackTrace();
 			return "Invalid query parameter!";
@@ -42,9 +38,7 @@ public class postHelper implements Callable {
 			if (point_a.length() != 0 || point_b.length() != 0)
 				return "Range parameter not allowed when point a and point b are specified.";
 		} else if (point_a.length() != 0 && point_b.length() != 0) {
-			System.out.println("Line 43 reached: ...  ..   .");
 			requested_range = new OpenCageAccessor().getRange(point_a, point_b,eventContext.getMessage().getInvocationProperty("opencage_apikey"));
-			System.out.println(requested_range);
 			final int rr = requested_range;
 			lacr.removeIf(a -> (int)a.get("range") < rr);
 		} else
@@ -63,7 +57,7 @@ public class postHelper implements Callable {
 				if (routeDao.pilotAssigned(pilot.getId()))
 					continue;
 				if (routeDao.insert(requested_range, acr.get("id"), acr.get("useful_load"), acr.get("range"),
-						pilot.getId(), acr.get("speed"), pilot.getAge(), pilot.getName(), acr.get("name"),
+						pilot.getId(), acr.get("speed"), pilot.getAge(), pilot.getName(), acr.get("manufacturer") + " " + acr.get("name"),
 						acr.get("passenger_capacity"), requested_passengers, route_name)) {
 					return routeDao.getRouteByName(route_name);
 				} else {

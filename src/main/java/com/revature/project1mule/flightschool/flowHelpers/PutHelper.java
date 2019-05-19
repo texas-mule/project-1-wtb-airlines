@@ -31,7 +31,7 @@ public class PutHelper implements Callable {
 				if (routeDao.pilotAssigned(pilot.getId()))
 					continue;
 				routeDao.update(requested_range, acr.get("id"), acr.get("useful_load"), acr.get("range"), pilot.getId(),
-						acr.get("speed"), pilot.getAge(), pilot.getName(), acr.get("name"),
+						acr.get("speed"), pilot.getAge(), pilot.getName(), acr.get("manufacturer") + " " + acr.get("name"),
 						acr.get("passenger_capacity"), requested_passengers, route_id);
 				return routeDao.getRouteById(route_id);
 			}
