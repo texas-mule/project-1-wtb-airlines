@@ -2,48 +2,48 @@
 ---
 title: Flight School API
 baseUri: https://flightschool.joshquizzes.com/flightschool/api
- /:
-  get:
-   description: Get basic info about the api
-   responses:
-    200:
-     body:
-      application/json:
-       type: |
-        {
-         "title": "Flight School API Root",
-         "description": "Links to the resources available on this API",
-         "$schema": "http://json-schema.org/draft-04/schema",
-         "type": "object",
-         "required": [
-          "pilots",
-          "aircraft",
-          "certifications"
-         ],
-         "properties": {
-          "pilots": {
-           "format": "uri",
-           "description": "The link to the pilots resource",
-           "type": "string"
-          },
-          "aircraft": {
-           "format": "uri",
-           "description": "The link to the aircraft resource",
-           "type": "string"
-          },
-          "certifications": {
-           "format": "uri",
-           "description": "The link to the certifications resource",
-           "type": "string"
-          }
+/:
+ get:
+  description: Get basic info about the api
+  responses:
+   200:
+    body:
+     application/json:
+      type: |
+       {
+        "title": "Flight School API Root",
+        "description": "Links to the resources available on this API",
+        "$schema": "http://json-schema.org/draft-04/schema",
+        "type": "object",
+        "required": [
+         "pilots",
+         "aircraft",
+         "certifications"
+        ],
+        "properties": {
+         "pilots": {
+          "format": "uri",
+          "description": "The link to the pilots resource",
+          "type": "string"
+         },
+         "aircraft": {
+          "format": "uri",
+          "description": "The link to the aircraft resource",
+          "type": "string"
+         },
+         "certifications": {
+          "format": "uri",
+          "description": "The link to the certifications resource",
+          "type": "string"
          }
         }
-       example: |
-        {
-         "pilots": "https://flightschool.joshquizzes.com/flightschool/api/pilot",
-         "aircraft": "https://flightschool.joshquizzes.com/flightschool/api/aircraft",
-         "certifications": "https://flightschool.joshquizzes.com/flightschool/api/certification"
-        }
+       }
+      example: |
+       {
+        "pilots": "https://flightschool.joshquizzes.com/flightschool/api/pilot",
+        "aircraft": "https://flightschool.joshquizzes.com/flightschool/api/aircraft",
+        "certifications": "https://flightschool.joshquizzes.com/flightschool/api/certification"
+       }
  /pilot:
   get:
    description: Get the list of pilots
@@ -262,7 +262,7 @@ baseUri: https://flightschool.joshquizzes.com/flightschool/api
            }
           ]
          }
-  /schema
+  /schema:
    get:
     description: Get the schema for pilots
     responses:
@@ -750,7 +750,7 @@ baseUri: https://flightschool.joshquizzes.com/flightschool/api
            }
           ]
          }
-  /schema
+  /schema:
    get:
     description: Get the schema for certifications
     responses:
@@ -1219,9 +1219,9 @@ baseUri: https://flightschool.joshquizzes.com/flightschool/api
            }
           ]
          }
-  /schema
+  /schema:
    get:
-    description Get the schema for aircraft
+    description: Get the schema for aircraft
     responses:
      200:
       body:

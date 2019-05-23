@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:ws="http://www.mulesoft.org/schema/mule/ws"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+
+	<apikit:config name="mule-airline-config" raml="mule-airline.raml"
+		consoleEnabled="true" doc:name="Router" keepRamlBaseUri="false" />
+	<db:generic-config name="Elephant_SQL_route_Database_Configuration"
+		url="jdbc:postgresql://echo.db.elephantsql.com:5432/fmdwmvhp?user=#[flowVars.elephant_username]&amp;password=#[flowVars.elephant_password]"
+		driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration" />
+	<flow name="mule-airline-main">
+		<http:listener config-ref="HTTP_Listener_Configuration"
+			path="/api/*" doc:name="HTTP" />
+		<apikit:router config-ref="mule-airline-config"
+			doc:name="APIkit Router" />
+		<exception-strategy ref="mule-airline-apiKitGlobalExceptionMapping"
+			doc:name="Reference Exception Strategy" />
+	</flow>
+	<flow name="mule-airline-console">
+		<http:listener config-ref="HTTP_Listener_Configuration"
+			path="/console/*" doc:name="HTTP" />
+		<apikit:console config-ref="mule-airline-config"
+			doc:name="APIkit Console" />
+	</flow>
+	<flow name="put:/route/{routeID}:mule-airline-config">
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
+		<set-variable variableName="elephant_url" value="${elephant.url}"
+			doc:name="elephant_url" />
+		<dw:transform-message doc:name="Set query params to variables">
+			<dw:set-variable variableName="requested_range"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.r as :number default 0]]></dw:set-variable>
+			<dw:set-variable variableName="requested_passengers"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.p as :number default 0]]></dw:set-variable>
+			<dw:set-variable variableName="route_id"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.uri.params'.routeID]]></dw:set-variable>
+		</dw:transform-message>
+		<ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft"
+			doc:name="Web Service Consumer" />
+		<dw:transform-message doc:name="Transform Message"
+			metadata:id="64271471-cc4c-4bb3-9968-d3f1ceb2beab">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+%namespace ns0 http://soap.revature.com/
+---
+payload.ns0#getAllAircraftResponse.*return map {
+	id: $.id as :number,
+	name: $.aircraftName,
+	manufacturer: $.manufacturer,
+	passenger_capacity: $.numPassengers as :number,
+	range: $.rangeNM as :number,
+	size: $.heightM * $.lengthM * $.wingSpanM,
+	speed: $.maxCruiseSpeedKtas as :number,
+	useful_load: $.usefulLoad as :number
+} orderBy ($.useful_load) filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)
+]]></dw:set-payload>
+		</dw:transform-message>
+		<component
+			class="com.revature.project1mule.flightschool.flowHelpers.PutHelper"
+			doc:name="Java" />
+	</flow>
+	<flow name="delete:/route/{routeID}:mule-airline-config">
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
+		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
+			doc:name="Payload" />
+		<db:delete config-ref="Elephant_SQL_route_Database_Configuration"
+			doc:name="Database">
+			<db:parameterized-query><![CDATA[DELETE FROM route WHERE id = (:id);]]></db:parameterized-query>
+			<db:in-param name="id" value="#[payload]" />
+		</db:delete>
+		<dw:transform-message doc:name="Transform Message"
+			metadata:id="eef5a22f-dff9-4ff1-9dfa-c8251a2e269e">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+"Route " ++ flowVars.routeID ++ " Deleted"]]></dw:set-payload>
+		</dw:transform-message>
+	</flow>
+	<flow name="get:/route:mule-airline-config">
+
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
+		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
+			doc:name="Database">
+			<db:parameterized-query><![CDATA[SELECT id, name, requested_range as distance, aircraft_name as aircraft, aircraft_passenger_capacity as capacity, pilot_name as pilot FROM route;]]></db:parameterized-query>
+		</db:select>
+
+
+	</flow>
+	<flow name="get:/route/{routeID}:mule-airline-config">
+
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
+		<set-payload value="#[message.inboundProperties.'http.uri.params'.routeID]"
+			doc:name="Payload" />
+		<db:select config-ref="Elephant_SQL_route_Database_Configuration"
+			doc:name="Database">
+			<db:parameterized-query><![CDATA[SELECT * FROM route WHERE id = (:id);]]></db:parameterized-query>
+			<db:in-param name="id" value="#[payload]" />
+		</db:select>
+
+
+	</flow>
+	<flow name="post:/route:mule-airline-config">
+        <set-variable variableName="opencage_apikey" value="${opencage.apikey}" doc:name="opencage_apikey"/>
+		<set-variable variableName="elephant_password" value="${elephant.password}"
+			doc:name="elephant_password" />
+		<set-variable variableName="elephant_username" value="${elephant.username}"
+			doc:name="elephant_username" />
+		<set-variable variableName="elephant_url" value="${elephant.url}"
+			doc:name="elephant_url" />
+		<dw:transform-message doc:name="Set query params to variables">
+			<dw:set-variable variableName="requested_range"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.r as :number default 0]]></dw:set-variable>
+			<dw:set-variable variableName="requested_passengers"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.p as :number default 0]]></dw:set-variable>
+			<dw:set-variable variableName="route_name"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.name as :string default ""]]></dw:set-variable>
+            <dw:set-variable variableName="point_a"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.a as :string default ""]]></dw:set-variable>
+            <dw:set-variable variableName="point_b"><![CDATA[%dw 1.0
+%output application/java
+---
+inboundProperties.'http.query.params'.b as :string default ""]]></dw:set-variable>
+		</dw:transform-message>
+		<ws:consumer config-ref="Web_Service_Consumer" operation="getAllAircraft"
+			doc:name="Web Service Consumer" />
+		<dw:transform-message doc:name="Transform Message"
+			metadata:id="64271471-cc4c-4bb3-9968-d3f1ceb2beab">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+%namespace ns0 http://soap.revature.com/
+---
+payload.ns0#getAllAircraftResponse.*return map {
+	id: $.id as :number,
+	name: $.aircraftName,
+	manufacturer: $.manufacturer,
+	passenger_capacity: $.numPassengers as :number,
+	range: $.rangeNM as :number,
+	size: $.heightM * $.lengthM * $.wingSpanM,
+	speed: $.maxCruiseSpeedKtas as :number,
+	useful_load: $.usefulLoad as :number
+} orderBy ($.useful_load) filter ($.passenger_capacity >= flowVars.requested_passengers as :number and $.range >= flowVars.requested_range as :number)
+]]></dw:set-payload>
+		</dw:transform-message>
+		<component
+			class="com.revature.project1mule.flightschool.flowHelpers.postHelper"
+			doc:name="Java" />
+	</flow>
+	<apikit:mapping-exception-strategy
+		name="mule-airline-apiKitGlobalExceptionMapping">
+		<apikit:mapping statusCode="404">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.NotFoundException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload
+				value="{ &quot;message&quot;: &quot;Resource not found&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+		<apikit:mapping statusCode="405">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.MethodNotAllowedException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload
+				value="{ &quot;message&quot;: &quot;Method not allowed&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+		<apikit:mapping statusCode="415">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload
+				value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+		<apikit:mapping statusCode="406">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.NotAcceptableException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+		<apikit:mapping statusCode="400">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.BadRequestException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+	</apikit:mapping-exception-strategy>
+</mule>
+
